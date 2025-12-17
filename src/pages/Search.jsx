@@ -117,7 +117,12 @@ const Search = () => {
                                     <h2>🎬 Videos</h2>
                                     <div className="results-grid">
                                         {displayedResults.videos.map(video => (
-                                            <Link to="/videos" key={video._id} className="result-card video-result card">
+                                            <Link
+                                                to="/videos"
+                                                state={{ play: video._id }}
+                                                key={video._id}
+                                                className="result-card video-result card"
+                                            >
                                                 <div className="result-thumb">
                                                     <img src={video.thumbnail || `https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`} alt={video.title} />
                                                     <span className="result-duration">{video.duration}</span>
@@ -139,7 +144,12 @@ const Search = () => {
                                     <h2>📄 Study Materials</h2>
                                     <div className="results-list">
                                         {displayedResults.materials.map(material => (
-                                            <Link to="/materials" key={material._id} className="result-card material-result card">
+                                            <Link
+                                                to="/materials"
+                                                state={{ highlight: material._id }}
+                                                key={material._id}
+                                                className="result-card material-result card"
+                                            >
                                                 <div className="material-icon">
                                                     {material.type === 'PDF' ? '📄' : material.type === 'PPT' ? '📊' : '📝'}
                                                 </div>

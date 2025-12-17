@@ -351,6 +351,35 @@
     background: #dc2626;
 }
 
+.btn-edit {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    margin-right: var(--spacing-xs);
+}
+
+.btn-edit:hover {
+    background: #2563eb;
+}
+
+.video-actions,
+.material-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 1rem;
+}
+
 /* Messages Section */
 .messages-section {
     padding: var(--spacing-xl);
@@ -466,8 +495,15 @@
     margin-bottom: var(--spacing-lg);
 }
 
-/* Responsive */
-@media (max-width: 992px) {
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablets (768px - 992px) */
+@media (min-width: 768px) and (max-width: 992px) {
+    .login-card {
+        max-width: 380px;
+        padding: var(--spacing-xl);
+    }
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -475,34 +511,392 @@
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
+
+    .admin-tabs {
+        flex-wrap: wrap;
+    }
+
+    .admin-tab {
+        padding: var(--spacing-sm) var(--spacing-lg);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
-@media (max-width: 768px) {
+/* Large phones (480px - 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
+    .login-section {
+        padding: var(--spacing-lg);
+    }
+
+    .login-card {
+        max-width: 100%;
+        padding: var(--spacing-lg);
+    }
+
+    .login-icon {
+        font-size: 2.5rem;
+    }
+
+    .login-header h2 {
+        font-size: 1.5rem;
+    }
+
     .admin-header-content {
         flex-direction: column;
         text-align: center;
         gap: var(--spacing-md);
     }
 
+    .admin-header h1 {
+        font-size: 1.75rem;
+    }
+
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .stat-card {
+        padding: var(--spacing-md);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
     }
 
     .admin-tabs {
-        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .admin-tab {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.9rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .upload-section {
+        padding: var(--spacing-md);
     }
 
     .form-row {
         grid-template-columns: 1fr;
     }
 
+    .upload-form h3 {
+        font-size: 1.1rem;
+    }
+
     .content-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
+    }
+
+    .message-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
     }
 
     .message-actions {
         flex-wrap: wrap;
+    }
+}
+
+/* Small phones (< 480px) */
+@media (max-width: 479px) {
+    .login-section {
+        padding: var(--spacing-md);
+        min-height: calc(100vh - 120px);
+    }
+
+    .login-card {
+        max-width: 100%;
+        padding: var(--spacing-md);
+    }
+
+    .login-icon {
+        font-size: 2rem;
+    }
+
+    .login-header {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .login-header h2 {
+        font-size: 1.35rem;
+    }
+
+    .login-header p {
+        font-size: 0.9rem;
+    }
+
+    .login-form .form-group {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .login-form label {
+        font-size: 0.9rem;
+    }
+
+    .login-form input {
+        padding: 12px;
+        font-size: 0.95rem;
+    }
+
+    .btn-login {
+        padding: 14px;
+        font-size: 0.95rem;
+    }
+
+    .login-hint {
+        font-size: 0.8rem;
+    }
+
+    .login-error {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+
+    .admin-header {
+        padding: var(--spacing-md) 0;
+    }
+
+    .admin-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
+    }
+
+    .admin-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .admin-header p {
+        font-size: 0.9rem;
+    }
+
+    .logout-btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .stat-card {
+        padding: var(--spacing-sm);
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-xs);
+    }
+
+    .stat-icon {
+        font-size: 1.75rem;
+    }
+
+    .stat-number {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .admin-tabs {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .admin-tab {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .dashboard-section {
+        padding: var(--spacing-sm);
+    }
+
+    .dashboard-section h3 {
+        font-size: 1rem;
+    }
+
+    .dashboard-item {
+        padding: var(--spacing-xs) 0;
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+    }
+
+    .item-meta {
+        font-size: 0.8rem;
+    }
+
+    .upload-section,
+    .messages-section {
+        padding: var(--spacing-sm);
+    }
+
+    .upload-form h3,
+    .messages-section h3 {
+        font-size: 1rem;
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-sm);
+    }
+
+    .upload-form .form-group {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .upload-form label {
+        font-size: 0.9rem;
+    }
+
+    .upload-form input,
+    .upload-form select,
+    .upload-form textarea {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .content-list {
+        margin-top: var(--spacing-md);
+        padding-top: var(--spacing-md);
+    }
+
+    .content-list h3 {
+        font-size: 1rem;
+    }
+
+    .content-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+
+    .content-info strong {
+        font-size: 0.9rem;
+    }
+
+    .content-info span {
+        font-size: 0.8rem;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .messages-list {
+        gap: var(--spacing-sm);
+    }
+
+    .message-item {
+        padding: var(--spacing-sm);
+    }
+
+    .message-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+
+    .message-sender strong {
+        font-size: 0.95rem;
+    }
+
+    .message-sender span,
+    .message-date {
+        font-size: 0.8rem;
+    }
+
+    .message-subject {
+        font-size: 0.9rem;
+    }
+
+    .message-body {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+
+    .message-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .no-messages {
+        padding: var(--spacing-lg);
+        font-size: 0.9rem;
+    }
+
+    .form-message {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+
+    .error-message {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+}
+
+/* Very small devices (< 320px) */
+@media (max-width: 320px) {
+    .login-card {
+        padding: var(--spacing-sm);
+    }
+
+    .login-icon {
+        font-size: 1.75rem;
+    }
+
+    .login-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .admin-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .stat-number {
+        font-size: 1.1rem;
+    }
+
+    .admin-tab {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .message-body {
+        font-size: 0.85rem;
     }
 }

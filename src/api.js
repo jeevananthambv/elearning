@@ -19,6 +19,10 @@ const apiCall = async (endpoint, options = {}) => {
         headers['Content-Type'] = 'application/json';
     }
 
+    // Prevent caching
+    headers['Cache-Control'] = 'no-cache';
+    headers['Pragma'] = 'no-cache';
+
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
@@ -174,6 +178,34 @@ export const statsAPI = {
     }
 };
 
+// Profile API
+export const profileAPI = {
+    get: async () => {
+        return apiCall('/profile');
+    },
+
+    update: async (profileData) => {
+        return apiCall('/profile', {
+            method: 'PUT',
+            body: JSON.stringify(profileData)
+        });
+    }
+};
+
+// Content API
+export const contentAPI = {
+    get: async () => {
+        return apiCall('/content');
+    },
+
+    update: async (contentData) => {
+        return apiCall('/content', {
+            method: 'PUT',
+            body: JSON.stringify(contentData)
+        });
+    }
+};
+
 // Health check
 export const checkHealth = async () => {
     try {
@@ -190,5 +222,7 @@ export default {
     materials: materialsAPI,
     contact: contactAPI,
     stats: statsAPI,
+    profile: profileAPI,
+    content: contentAPI,
     checkHealth
 };

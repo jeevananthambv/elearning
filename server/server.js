@@ -41,8 +41,30 @@ const initializeData = () => {
                 { id: '5', title: 'Operating Systems Concepts', subject: 'Operating Systems', description: 'Understanding process management, memory management, and file systems.', thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=225&fit=crop', duration: '55:45', youtubeId: 'dQw4w9WgXcQ', views: 0 },
                 { id: '6', title: 'Computer Networks Fundamentals', subject: 'Networking', description: 'Learn about OSI model, TCP/IP, routing, and network security basics.', thumbnail: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=225&fit=crop', duration: '48:30', youtubeId: 'dQw4w9WgXcQ', views: 0 }
             ],
-            materials: [],
-            contacts: []
+            materials: [
+                {
+                    id: '1',
+                    title: 'Data Structures Lecture Notes - Unit 1',
+                    category: 'Data Structures',
+                    type: 'PDF',
+                    size: '2.4 MB',
+                    originalName: 'DS_Unit1.pdf',
+                    downloads: 12
+                }
+            ],
+            contacts: [],
+            profile: {
+                name: 'Madhankumar C',
+                title: 'Assistant Professor',
+                department: 'Computer Science & Engineering',
+                email: 'madhankumar@university.edu',
+                phone: '+91 98765 43210',
+                location: 'Room 304, CS Block',
+                about: 'I am a passionate educator with over 10 years of experience in teaching Computer Science.',
+                experience: '10+ Years',
+                education: 'Ph.D. in Computer Science',
+                image: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop'
+            }
         };
         fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
         console.log('✅ Data file created with default data');
@@ -82,30 +104,11 @@ app.use('/uploads', express.static(uploadsDir));
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadsDir),
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
-const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
-// Auth middleware
-const protect = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ success: false, message: 'Not authorized' });
-    }
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const data = getData();
-        req.user = data.users.find(u => u.id === decoded.id);
-        if (!req.user) {
-            return res.status(401).json({ success: false, message: 'User not found' });
-        }
-        next();
-    } catch {
-        return res.status(401).json({ success: false, message: 'Invalid token' });
-    }
-};
+const upload = multer({ storage });
 
 // Helper to format file size
 const formatFileSize = (bytes) => {
@@ -122,6 +125,33 @@ const getFileType = (filename) => {
     return 'Other';
 };
 
+// Protect Middleware
+const protect = (req, res, next) => {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Not authorized, no token' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const data = getData();
+        const user = data.users.find(u => u.id === decoded.id);
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'User not found' });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
+    }
+};
+
 // ==================== AUTH ROUTES ====================
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
@@ -134,57 +164,26 @@ app.post('/api/auth/login', async (req, res) => {
     if (!user) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, {
+        expiresIn: '30d'
+    });
+
     res.json({
         success: true,
-        data: { id: user.id, email: user.email, name: user.name, token }
+        data: {
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        }
     });
-});
-
-app.post('/api/auth/register', async (req, res) => {
-    const { email, password, name } = req.body;
-    const data = getData();
-
-    if (data.users.find(u => u.email === email)) {
-        return res.status(400).json({ success: false, message: 'User already exists' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = {
-        id: Date.now().toString(),
-        email,
-        password: hashedPassword,
-        name: name || 'Admin'
-    };
-
-    data.users.push(newUser);
-    saveData(data);
-
-    const token = jwt.sign({ id: newUser.id }, JWT_SECRET, { expiresIn: '7d' });
-    res.status(201).json({
-        success: true,
-        data: { id: newUser.id, email: newUser.email, name: newUser.name, token }
-    });
-});
-
-app.get('/api/auth/verify', protect, (req, res) => {
-    res.json({ success: true, data: { id: req.user.id, email: req.user.email, name: req.user.name } });
-});
-
-// ==================== VIDEOS ROUTES ====================
-app.get('/api/videos', (req, res) => {
-    const data = getData();
-    let videos = data.videos;
-    if (req.query.subject && req.query.subject !== 'All') {
-        videos = videos.filter(v => v.subject === req.query.subject);
-    }
-    res.json({ success: true, count: videos.length, data: videos.map(v => ({ ...v, _id: v.id })) });
 });
 
 app.get('/api/videos/:id', (req, res) => {
@@ -217,6 +216,31 @@ app.post('/api/videos', protect, (req, res) => {
     data.videos.push(newVideo);
     saveData(data);
     res.status(201).json({ success: true, data: { ...newVideo, _id: newVideo.id } });
+});
+
+app.put('/api/videos/:id', protect, (req, res) => {
+    const { title, subject, description, thumbnail, duration, youtubeId } = req.body;
+    const data = getData();
+    const video = data.videos.find(v => v.id === req.params.id);
+
+    if (!video) {
+        return res.status(404).json({ success: false, message: 'Video not found' });
+    }
+
+    if (title) video.title = title;
+    if (subject) video.subject = subject;
+    if (description) video.description = description;
+    if (thumbnail) video.thumbnail = thumbnail;
+    if (duration) video.duration = duration;
+    if (youtubeId) {
+        video.youtubeId = youtubeId;
+        if (!thumbnail) {
+            video.thumbnail = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+        }
+    }
+
+    saveData(data);
+    res.json({ success: true, data: { ...video, _id: video.id } });
 });
 
 app.delete('/api/videos/:id', protect, (req, res) => {
@@ -283,6 +307,22 @@ app.post('/api/materials', protect, upload.single('file'), (req, res) => {
     data.materials.push(newMaterial);
     saveData(data);
     res.status(201).json({ success: true, data: { ...newMaterial, _id: newMaterial.id } });
+});
+
+app.put('/api/materials/:id', protect, (req, res) => {
+    const { title, category } = req.body;
+    const data = getData();
+    const material = data.materials.find(m => m.id === req.params.id);
+
+    if (!material) {
+        return res.status(404).json({ success: false, message: 'Material not found' });
+    }
+
+    if (title) material.title = title;
+    if (category) material.category = category;
+
+    saveData(data);
+    res.json({ success: true, data: { ...material, _id: material.id } });
 });
 
 app.delete('/api/materials/:id', protect, (req, res) => {
@@ -352,6 +392,48 @@ app.delete('/api/contact/:id', protect, (req, res) => {
     data.contacts.splice(index, 1);
     saveData(data);
     res.json({ success: true, message: 'Message deleted' });
+});
+
+// ==================== CONTENT ROUTES ====================
+app.get('/api/content', async (req, res) => {
+    try {
+        const data = await getData();
+        res.json({ success: true, data: data.siteContent || {} });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching content' });
+    }
+});
+
+app.put('/api/content', protect, async (req, res) => {
+    try {
+        const data = getData();
+        data.siteContent = { ...data.siteContent, ...req.body };
+        saveData(data);
+        res.json({ success: true, data: data.siteContent });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error updating content' });
+    }
+});
+
+// ==================== PROFILE ROUTES ====================
+app.get('/api/profile', (req, res) => {
+    const data = getData();
+    // Return default if not exists (migration compatibility)
+    const profile = data.profile || {
+        name: 'Madhankumar C',
+        title: 'Assistant Professor',
+        department: 'Dept of Computer Science',
+        about: 'Welcome to my e-content portal.',
+        email: 'admin@university.edu'
+    };
+    res.json({ success: true, data: profile });
+});
+
+app.put('/api/profile', protect, (req, res) => {
+    const data = getData();
+    data.profile = { ...data.profile, ...req.body };
+    saveData(data);
+    res.json({ success: true, data: data.profile, message: 'Profile updated successfully' });
 });
 
 // ==================== STATS ROUTES ====================

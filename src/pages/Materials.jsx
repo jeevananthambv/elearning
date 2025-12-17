@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Materials.css';
 import { materialsAPI } from '../api';
 
@@ -20,6 +21,7 @@ const getIconAndColor = (type) => {
 };
 
 const Materials = () => {
+    const location = useLocation();
     const [materialsData, setMaterialsData] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [selectedType, setSelectedType] = useState('All');
@@ -30,6 +32,18 @@ const Materials = () => {
     useEffect(() => {
         fetchMaterials();
     }, [selectedCategory, selectedType]);
+
+    // Handle Highlight
+    useEffect(() => {
+        if (location.state?.highlight && materialsData.length > 0) {
+            const element = document.getElementById(location.state.highlight);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.classList.add('highlight-item');
+                setTimeout(() => element.classList.remove('highlight-item'), 3000);
+            }
+        }
+    }, [materialsData, location.state]);
 
     const fetchMaterials = async () => {
         try {
@@ -128,7 +142,7 @@ const Materials = () => {
                                 {materialsData.map((material) => {
                                     const { icon, color } = getIconAndColor(material.type);
                                     return (
-                                        <div key={material._id} className="material-item card">
+                                        <div key={material._id} id={material._id} className="material-item card">
                                             <div className="material-icon-wrapper" style={{ background: `${color}15` }}>
                                                 <span className="material-type-icon" style={{ color: color }}>
                                                     {icon}

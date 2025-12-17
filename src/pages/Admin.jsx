@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Admin.css';
-import { authAPI, videosAPI, materialsAPI, contactAPI, statsAPI, getToken } from '../api';
+import { authAPI, videosAPI, materialsAPI, contactAPI, statsAPI, profileAPI, contentAPI, getToken } from '../api';
 
 const Admin = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -9,19 +9,41 @@ const Admin = () => {
     const [loginError, setLoginError] = useState('');
     const [loginLoading, setLoginLoading] = useState(false);
 
-    // Dashboard data
+    // Dashboard Data State
+    const [loading, setLoading] = useState(false);
     const [stats, setStats] = useState(null);
     const [videos, setVideos] = useState([]);
     const [materials, setMaterials] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [profile, setProfile] = useState(null);
 
-    // Form data
+    // Additional state for editing
+    const [editingVideo, setEditingVideo] = useState(null);
+    const [editingMaterial, setEditingMaterial] = useState(null);
+
     const [videoForm, setVideoForm] = useState({
         title: '', subject: '', description: '', youtubeId: '', thumbnail: '', duration: ''
     });
     const [materialForm, setMaterialForm] = useState({
         title: '', category: '', file: null
+    });
+
+    const [profileForm, setProfileForm] = useState({
+        name: '', title: '', department: '', email: '', phone: '', location: '', about: '', experience: '', education: '', image: '',
+        academicBackground: [],
+        teachingInterests: [],
+        academicBackground: [],
+        teachingInterests: [],
+        social: { linkedin: '', scholar: '', researchgate: '' },
+        contributionTitle: '',
+        contributionText: '',
+        contributionStats: { lectures: '', materials: '', students: '', subjects: '' }
+    });
+    const [contentForm, setContentForm] = useState({
+        hero: { badge: '', titleStart: '', titleEnd: '', subtitle: '', description: '', ctaPrimary: '', ctaSecondary: '' },
+        mission: { title: '', text: '' },
+        features: [],
+        branding: { title: '', icon: '' }
     });
     const [formMessage, setFormMessage] = useState({ type: '', text: '' });
 
@@ -45,17 +67,26 @@ const Admin = () => {
     const fetchDashboardData = async () => {
         setLoading(true);
         try {
-            const [statsRes, videosRes, materialsRes, messagesRes] = await Promise.all([
+            const [statsRes, videosRes, materialsRes, messagesRes, profileRes, contentRes] = await Promise.all([
                 statsAPI.getAdmin(),
                 videosAPI.getAll(),
                 materialsAPI.getAll(),
-                contactAPI.getAll()
+                contactAPI.getAll(),
+                profileAPI.get(),
+                contentAPI.get()
             ]);
 
             if (statsRes.success) setStats(statsRes.data);
             if (videosRes.success) setVideos(videosRes.data);
             if (materialsRes.success) setMaterials(materialsRes.data);
             if (messagesRes.success) setMessages(messagesRes.data);
+            if (profileRes.success && profileRes.data) {
+                setProfile(profileRes.data);
+                setProfileForm(profileRes.data);
+            }
+            if (contentRes.success) {
+                setContentForm(prev => ({ ...prev, ...contentRes.data }));
+            }
         } catch (err) {
             console.error('Error fetching dashboard data:', err);
         } finally {
@@ -93,22 +124,48 @@ const Admin = () => {
         setFormMessage({ type: '', text: '' });
 
         try {
-            const response = await videosAPI.create(videoForm);
+            let response;
+            if (editingVideo) {
+                response = await videosAPI.update(editingVideo.id || editingVideo._id, videoForm);
+            } else {
+                response = await videosAPI.create(videoForm);
+            }
+
             if (response.success) {
-                setFormMessage({ type: 'success', text: 'Video added successfully!' });
+                setFormMessage({ type: 'success', text: editingVideo ? 'Video updated successfully!' : 'Video added successfully!' });
                 setVideoForm({ title: '', subject: '', description: '', youtubeId: '', thumbnail: '', duration: '' });
+                setEditingVideo(null);
                 fetchDashboardData();
             }
         } catch (err) {
-            setFormMessage({ type: 'error', text: err.message || 'Failed to add video' });
+            setFormMessage({ type: 'error', text: err.message || 'Failed to save video' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    };
+
+    const handleEditVideo = (video) => {
+        setEditingVideo(video);
+        setVideoForm({
+            title: video.title,
+            subject: video.subject,
+            description: video.description || '',
+            youtubeId: video.youtubeId,
+            thumbnail: video.thumbnail || '',
+            duration: video.duration || ''
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancelVideoEdit = () => {
+        setEditingVideo(null);
+        setVideoForm({ title: '', subject: '', description: '', youtubeId: '', thumbnail: '', duration: '' });
     };
 
     const handleMaterialSubmit = async (e) => {
         e.preventDefault();
         setFormMessage({ type: '', text: '' });
 
-        if (!materialForm.file) {
+        if (!editingMaterial && !materialForm.file) {
             setFormMessage({ type: 'error', text: 'Please select a file' });
             return;
         }
@@ -117,19 +174,46 @@ const Admin = () => {
             const formData = new FormData();
             formData.append('title', materialForm.title);
             formData.append('category', materialForm.category);
-            formData.append('file', materialForm.file);
+            if (materialForm.file) {
+                formData.append('file', materialForm.file);
+            }
 
-            const response = await materialsAPI.create(formData);
+            let response;
+            if (editingMaterial) {
+                response = await materialsAPI.update(editingMaterial.id || editingMaterial._id, formData);
+            } else {
+                response = await materialsAPI.create(formData);
+            }
+
             if (response.success) {
-                setFormMessage({ type: 'success', text: 'Material uploaded successfully!' });
+                setFormMessage({ type: 'success', text: editingMaterial ? 'Material updated successfully!' : 'Material uploaded successfully!' });
                 setMaterialForm({ title: '', category: '', file: null });
-                // Reset file input
-                document.getElementById('material-file').value = '';
+                const fileInput = document.getElementById('material-file');
+                if (fileInput) fileInput.value = '';
+                setEditingMaterial(null);
                 fetchDashboardData();
             }
         } catch (err) {
-            setFormMessage({ type: 'error', text: err.message || 'Failed to upload material' });
+            setFormMessage({ type: 'error', text: err.message || 'Failed to save material' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    };
+
+    const handleEditMaterial = (material) => {
+        setEditingMaterial(material);
+        setMaterialForm({
+            title: material.title,
+            category: material.category,
+            file: null // File cannot be pre-filled
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancelMaterialEdit = () => {
+        setEditingMaterial(null);
+        setMaterialForm({ title: '', category: '', file: null });
+        const fileInput = document.getElementById('material-file');
+        if (fileInput) fileInput.value = '';
     };
 
     const handleDeleteVideo = async (id) => {
@@ -168,6 +252,37 @@ const Admin = () => {
             fetchDashboardData();
         } catch (err) {
             console.error('Failed to mark as read:', err);
+        }
+    };
+
+    const handleProfileUpdate = async (e) => {
+        e.preventDefault();
+        setFormMessage({ type: '', text: '' });
+
+        try {
+            const response = await profileAPI.update(profileForm);
+            if (response.success) {
+                setFormMessage({ type: 'success', text: 'Profile updated successfully!' });
+                setProfile(response.data);
+                fetchDashboardData();
+            }
+        } catch (err) {
+            setFormMessage({ type: 'error', text: err.message || 'Failed to update profile' });
+        }
+    };
+
+    const handleContentUpdate = async (e) => {
+        e.preventDefault();
+        setFormMessage({ type: '', text: '' });
+
+        try {
+            const response = await contentAPI.update(contentForm);
+            if (response.success) {
+                setFormMessage({ type: 'success', text: 'Site content updated successfully!' });
+                fetchDashboardData();
+            }
+        } catch (err) {
+            setFormMessage({ type: 'error', text: err.message || 'Failed to update content' });
         }
     };
 
@@ -260,13 +375,7 @@ const Admin = () => {
                                 <span className="stat-label">Study Materials</span>
                             </div>
                         </div>
-                        <div className="stat-card card">
-                            <span className="stat-icon">👁</span>
-                            <div className="stat-info">
-                                <span className="stat-number">{stats?.totals?.views?.toLocaleString() || 0}</span>
-                                <span className="stat-label">Total Views</span>
-                            </div>
-                        </div>
+
                         <div className="stat-card card">
                             <span className="stat-icon">📨</span>
                             <div className="stat-info">
@@ -283,6 +392,12 @@ const Admin = () => {
                             onClick={() => setActiveTab('dashboard')}
                         >
                             📊 Dashboard
+                        </button>
+                        <button
+                            className={`admin-tab ${activeTab === 'profile' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('profile')}
+                        >
+                            👤 Profile
                         </button>
                         <button
                             className={`admin-tab ${activeTab === 'videos' ? 'active' : ''}`}
@@ -304,6 +419,12 @@ const Admin = () => {
                                 <span className="badge">{stats.counts.unreadMessages}</span>
                             )}
                         </button>
+                        <button
+                            className={`admin-tab ${activeTab === 'content' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('content')}
+                        >
+                            📝 Site Content
+                        </button>
                     </div>
 
                     {/* Tab Content */}
@@ -315,7 +436,7 @@ const Admin = () => {
                                     {videos.slice(0, 5).map(video => (
                                         <div key={video._id} className="dashboard-item">
                                             <span>{video.title}</span>
-                                            <span className="item-meta">{video.views} views</span>
+                                            <span className="item-meta">{video.subject}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -332,10 +453,10 @@ const Admin = () => {
                         </div>
                     )}
 
-                    {activeTab === 'videos' && (
+                    {activeTab === 'profile' && (
                         <div className="upload-section card">
-                            <form className="upload-form" onSubmit={handleVideoSubmit}>
-                                <h3>Add New Video</h3>
+                            <form className="upload-form" onSubmit={handleProfileUpdate}>
+                                <h3>Update Profile Information</h3>
                                 {formMessage.text && (
                                     <div className={`form-message ${formMessage.type}`}>
                                         {formMessage.text}
@@ -343,211 +464,816 @@ const Admin = () => {
                                 )}
                                 <div className="form-row">
                                     <div className="form-group">
-                                        <label>Video Title *</label>
+                                        <label>Full Name</label>
                                         <input
                                             type="text"
-                                            placeholder="Enter video title"
-                                            value={videoForm.title}
-                                            onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })}
-                                            required
+                                            value={profileForm.name}
+                                            onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Subject/Category *</label>
-                                        <select
-                                            value={videoForm.subject}
-                                            onChange={(e) => setVideoForm({ ...videoForm, subject: e.target.value })}
-                                            required
-                                        >
-                                            <option value="">Select category</option>
-                                            <option>Data Structures</option>
-                                            <option>Programming</option>
-                                            <option>DBMS</option>
-                                            <option>Algorithms</option>
-                                            <option>Operating Systems</option>
-                                            <option>Networking</option>
-                                        </select>
+                                        <label>Academic Title</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.title}
+                                            onChange={(e) => setProfileForm({ ...profileForm, title: e.target.value })}
+                                            placeholder="e.g. Assistant Professor"
+                                        />
                                     </div>
-                                </div>
-                                <div className="form-group">
-                                    <label>Description</label>
-                                    <textarea
-                                        placeholder="Enter video description"
-                                        rows="3"
-                                        value={videoForm.description}
-                                        onChange={(e) => setVideoForm({ ...videoForm, description: e.target.value })}
-                                    ></textarea>
                                 </div>
                                 <div className="form-row">
                                     <div className="form-group">
-                                        <label>YouTube Video ID *</label>
+                                        <label>Department</label>
                                         <input
                                             type="text"
-                                            placeholder="e.g., dQw4w9WgXcQ"
-                                            value={videoForm.youtubeId}
-                                            onChange={(e) => setVideoForm({ ...videoForm, youtubeId: e.target.value })}
-                                            required
+                                            value={profileForm.department}
+                                            onChange={(e) => setProfileForm({ ...profileForm, department: e.target.value })}
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Duration</label>
+                                        <label>Education</label>
                                         <input
                                             type="text"
-                                            placeholder="e.g., 45:30"
-                                            value={videoForm.duration}
-                                            onChange={(e) => setVideoForm({ ...videoForm, duration: e.target.value })}
+                                            value={profileForm.education}
+                                            onChange={(e) => setProfileForm({ ...profileForm, education: e.target.value })}
                                         />
                                     </div>
                                 </div>
-                                <div className="upload-actions">
-                                    <button type="submit" className="btn btn-primary">
-                                        ➕ Add Video
-                                    </button>
-                                </div>
-                            </form>
-
-                            {/* Video List */}
-                            <div className="content-list">
-                                <h3>Manage Videos ({videos.length})</h3>
-                                {videos.map(video => (
-                                    <div key={video._id} className="content-item">
-                                        <div className="content-info">
-                                            <strong>{video.title}</strong>
-                                            <span>{video.subject} • {video.views} views</span>
-                                        </div>
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => handleDeleteVideo(video._id)}
-                                        >
-                                            🗑️ Delete
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'materials' && (
-                        <div className="upload-section card">
-                            <form className="upload-form" onSubmit={handleMaterialSubmit}>
-                                <h3>Upload New Material</h3>
-                                {formMessage.text && (
-                                    <div className={`form-message ${formMessage.type}`}>
-                                        {formMessage.text}
-                                    </div>
-                                )}
                                 <div className="form-row">
                                     <div className="form-group">
-                                        <label>Material Title *</label>
+                                        <label>Email</label>
                                         <input
-                                            type="text"
-                                            placeholder="Enter material title"
-                                            value={materialForm.title}
-                                            onChange={(e) => setMaterialForm({ ...materialForm, title: e.target.value })}
-                                            required
+                                            type="email"
+                                            value={profileForm.email}
+                                            onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Category *</label>
-                                        <select
-                                            value={materialForm.category}
-                                            onChange={(e) => setMaterialForm({ ...materialForm, category: e.target.value })}
-                                            required
-                                        >
-                                            <option value="">Select category</option>
-                                            <option>Data Structures</option>
-                                            <option>Programming</option>
-                                            <option>DBMS</option>
-                                            <option>Algorithms</option>
-                                            <option>Operating Systems</option>
-                                            <option>Networking</option>
-                                        </select>
+                                        <label>Phone</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.phone}
+                                            onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Office Location</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.location}
+                                            onChange={(e) => setProfileForm({ ...profileForm, location: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Experience</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.experience}
+                                            onChange={(e) => setProfileForm({ ...profileForm, experience: e.target.value })}
+                                        />
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>File Upload *</label>
+                                    <label>Profile Image URL</label>
                                     <input
-                                        type="file"
-                                        id="material-file"
-                                        accept=".pdf,.ppt,.pptx,.doc,.docx"
-                                        onChange={(e) => setMaterialForm({ ...materialForm, file: e.target.files[0] })}
-                                        required
+                                        type="text"
+                                        value={profileForm.image}
+                                        onChange={(e) => setProfileForm({ ...profileForm, image: e.target.value })}
                                     />
                                 </div>
-                                <div className="upload-actions">
-                                    <button type="submit" className="btn btn-primary">
-                                        ➕ Upload Material
-                                    </button>
-                                </div>
-                            </form>
 
-                            {/* Material List */}
-                            <div className="content-list">
-                                <h3>Manage Materials ({materials.length})</h3>
-                                {materials.map(material => (
-                                    <div key={material._id} className="content-item">
-                                        <div className="content-info">
-                                            <strong>{material.title}</strong>
-                                            <span>{material.category} • {material.type} • {material.size}</span>
+                                <h4 className="form-section-title">Social Links</h4>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>LinkedIn URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.social?.linkedin || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                social: { ...profileForm.social, linkedin: e.target.value }
+                                            })}
+                                            placeholder="https://linkedin.com/in/..."
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Google Scholar URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.social?.scholar || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                social: { ...profileForm.social, scholar: e.target.value }
+                                            })}
+                                            placeholder="https://scholar.google.com/..."
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>ResearchGate URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.social?.researchgate || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                social: { ...profileForm.social, researchgate: e.target.value }
+                                            })}
+                                            placeholder="https://researchgate.net/..."
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>About Description</label>
+                                    <textarea
+                                        rows="5"
+                                        value={profileForm.about}
+                                        onChange={(e) => setProfileForm({ ...profileForm, about: e.target.value })}
+                                    ></textarea>
+                                </div>
+
+                                <h4 className="form-section-title">E-Content Contributions</h4>
+                                <div className="form-group">
+                                    <label>Section Title</label>
+                                    <input
+                                        type="text"
+                                        value={profileForm.contributionTitle || ''}
+                                        onChange={(e) => setProfileForm({ ...profileForm, contributionTitle: e.target.value })}
+                                        placeholder="Contributions to E-Content Development"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Introduction Text</label>
+                                    <textarea
+                                        rows="3"
+                                        value={profileForm.contributionText || ''}
+                                        onChange={(e) => setProfileForm({ ...profileForm, contributionText: e.target.value })}
+                                    ></textarea>
+                                </div>
+
+                                <h4 className="form-section-title">Contribution Stats</h4>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Video Lectures</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.contributionStats?.lectures || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                contributionStats: { ...profileForm.contributionStats, lectures: e.target.value }
+                                            })}
+                                            placeholder="e.g. 50+"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Study Materials</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.contributionStats?.materials || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                contributionStats: { ...profileForm.contributionStats, materials: e.target.value }
+                                            })}
+                                            placeholder="e.g. 100+"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Students Impacted</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.contributionStats?.students || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                contributionStats: { ...profileForm.contributionStats, students: e.target.value }
+                                            })}
+                                            placeholder="e.g. 1000+"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Subjects Covered</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.contributionStats?.subjects || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                contributionStats: { ...profileForm.contributionStats, subjects: e.target.value }
+                                            })}
+                                            placeholder="e.g. 5+"
+                                        />
+                                    </div>
+                                </div>
+
+                                <h4 className="form-section-title">Academic Background (Timeline)</h4>
+                                {profileForm.academicBackground?.map((item, index) => (
+                                    <div key={index} className="array-item-card">
+                                        <div className="form-row">
+                                            <div className="form-group">
+                                                <label>Year Range</label>
+                                                <input
+                                                    type="text"
+                                                    value={item.year}
+                                                    onChange={(e) => {
+                                                        const newBg = [...profileForm.academicBackground];
+                                                        newBg[index].year = e.target.value;
+                                                        setProfileForm({ ...profileForm, academicBackground: newBg });
+                                                    }}
+                                                    placeholder="e.g. 2020 - Present"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Role/Degree</label>
+                                                <input
+                                                    type="text"
+                                                    value={item.role}
+                                                    onChange={(e) => {
+                                                        const newBg = [...profileForm.academicBackground];
+                                                        newBg[index].role = e.target.value;
+                                                        setProfileForm({ ...profileForm, academicBackground: newBg });
+                                                    }}
+                                                    placeholder="e.g. Associate Professor"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Institution</label>
+                                            <input
+                                                type="text"
+                                                value={item.institution}
+                                                onChange={(e) => {
+                                                    const newBg = [...profileForm.academicBackground];
+                                                    newBg[index].institution = e.target.value;
+                                                    setProfileForm({ ...profileForm, academicBackground: newBg });
+                                                }}
+                                            />
                                         </div>
                                         <button
+                                            type="button"
                                             className="btn btn-danger btn-sm"
-                                            onClick={() => handleDeleteMaterial(material._id)}
+                                            onClick={() => {
+                                                const newBg = profileForm.academicBackground.filter((_, i) => i !== index);
+                                                setProfileForm({ ...profileForm, academicBackground: newBg });
+                                            }}
                                         >
-                                            🗑️ Delete
+                                            Remove Item
                                         </button>
                                     </div>
                                 ))}
-                            </div>
-                        </div>
-                    )}
+                                <button
+                                    type="button"
+                                    className="btn btn-outline btn-sm mb-4"
+                                    onClick={() => setProfileForm({
+                                        ...profileForm,
+                                        academicBackground: [...(profileForm.academicBackground || []), { year: '', role: '', institution: '' }]
+                                    })}
+                                >
+                                    + Add Timeline Item
+                                </button>
 
-                    {activeTab === 'messages' && (
-                        <div className="messages-section card">
-                            <h3>Contact Messages ({messages.length})</h3>
-                            {messages.length === 0 ? (
-                                <p className="no-messages">No messages yet.</p>
-                            ) : (
-                                <div className="messages-list">
-                                    {messages.map(msg => (
-                                        <div key={msg._id} className={`message-item ${!msg.isRead ? 'unread' : ''}`}>
-                                            <div className="message-header">
-                                                <div className="message-sender">
-                                                    <strong>{msg.name}</strong>
-                                                    <span>{msg.email}</span>
-                                                </div>
-                                                <div className="message-date">
-                                                    {new Date(msg.createdAt).toLocaleDateString()}
-                                                </div>
+                                <h4 className="form-section-title">Teaching Interests</h4>
+                                {profileForm.teachingInterests?.map((item, index) => (
+                                    <div key={index} className="array-item-card">
+                                        <div className="form-row">
+                                            <div className="form-group">
+                                                <label>Title</label>
+                                                <input
+                                                    type="text"
+                                                    value={item.title}
+                                                    onChange={(e) => {
+                                                        const newInterests = [...profileForm.teachingInterests];
+                                                        newInterests[index].title = e.target.value;
+                                                        setProfileForm({ ...profileForm, teachingInterests: newInterests });
+                                                    }}
+                                                />
                                             </div>
-                                            <div className="message-subject">
-                                                <strong>Subject:</strong> {msg.subject || 'No Subject'}
+                                            <div className="form-group">
+                                                <label>Icon (Emoji)</label>
+                                                <input
+                                                    type="text"
+                                                    value={item.icon}
+                                                    onChange={(e) => {
+                                                        const newInterests = [...profileForm.teachingInterests];
+                                                        newInterests[index].icon = e.target.value;
+                                                        setProfileForm({ ...profileForm, teachingInterests: newInterests });
+                                                    }}
+                                                />
                                             </div>
-                                            <div className="message-body">
-                                                {msg.message}
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Description</label>
+                                            <input
+                                                type="text"
+                                                value={item.description}
+                                                onChange={(e) => {
+                                                    const newInterests = [...profileForm.teachingInterests];
+                                                    newInterests[index].description = e.target.value;
+                                                    setProfileForm({ ...profileForm, teachingInterests: newInterests });
+                                                }}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => {
+                                                const newInterests = profileForm.teachingInterests.filter((_, i) => i !== index);
+                                                setProfileForm({ ...profileForm, teachingInterests: newInterests });
+                                            }}
+                                        >
+                                            Remove Interest
+                                        </button>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    className="btn btn-outline btn-sm mb-4"
+                                    onClick={() => setProfileForm({
+                                        ...profileForm,
+                                        teachingInterests: [...(profileForm.teachingInterests || []), { title: '', description: '', icon: '' }]
+                                    })}
+                                >
+                                    + Add Interest
+                                </button>
+                                <div className="upload-actions">
+                                    <button type="submit" className="btn btn-primary">
+                                        💾 Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )
+                    }
+
+                    {
+                        activeTab === 'videos' && (
+                            <div className="upload-section card">
+                                <form className="upload-form" onSubmit={handleVideoSubmit}>
+                                    <h3>{editingVideo ? 'Edit Video' : 'Add New Video'}</h3>
+                                    {formMessage.text && (
+                                        <div className={`form-message ${formMessage.type}`}>
+                                            {formMessage.text}
+                                        </div>
+                                    )}
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Video Title *</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter video title"
+                                                value={videoForm.title}
+                                                onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Subject/Category *</label>
+                                            <select
+                                                value={videoForm.subject}
+                                                onChange={(e) => setVideoForm({ ...videoForm, subject: e.target.value })}
+                                                required
+                                            >
+                                                <option value="">Select category</option>
+                                                <option>Data Structures</option>
+                                                <option>Programming</option>
+                                                <option>DBMS</option>
+                                                <option>Algorithms</option>
+                                                <option>Operating Systems</option>
+                                                <option>Networking</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Description</label>
+                                        <textarea
+                                            placeholder="Enter video description"
+                                            rows="3"
+                                            value={videoForm.description}
+                                            onChange={(e) => setVideoForm({ ...videoForm, description: e.target.value })}
+                                        ></textarea>
+                                    </div>
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>YouTube Video ID *</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g., dQw4w9WgXcQ"
+                                                value={videoForm.youtubeId}
+                                                onChange={(e) => setVideoForm({ ...videoForm, youtubeId: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Duration</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g., 45:30"
+                                                value={videoForm.duration}
+                                                onChange={(e) => setVideoForm({ ...videoForm, duration: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="upload-actions">
+                                        <button type="submit" className="btn btn-primary">
+                                            {editingVideo ? '💾 Update Video' : '➕ Add Video'}
+                                        </button>
+                                        {editingVideo && (
+                                            <button type="button" className="btn btn-secondary" onClick={handleCancelVideoEdit}>
+                                                ❌ Cancel Edit
+                                            </button>
+                                        )}
+                                    </div>
+                                </form>
+
+                                {/* Video List */}
+                                <div className="content-list">
+                                    <h3>Manage Videos ({videos.length})</h3>
+                                    {videos.map(video => (
+                                        <div key={video.id || video._id} className="content-item">
+                                            <div className="content-info">
+                                                <strong>{video.title}</strong>
+                                                <span>{video.subject} • {video.views} views</span>
                                             </div>
-                                            <div className="message-actions">
-                                                {!msg.isRead && (
-                                                    <button
-                                                        className="btn btn-outline btn-sm"
-                                                        onClick={() => handleMarkAsRead(msg._id)}
-                                                    >
-                                                        ✓ Mark as Read
-                                                    </button>
-                                                )}
+                                            <div className="video-actions">
                                                 <button
-                                                    className="btn btn-danger btn-sm"
-                                                    onClick={() => handleDeleteMessage(msg._id)}
+                                                    className="btn btn-icon btn-edit"
+                                                    onClick={() => handleEditVideo(video)}
+                                                    title="Edit Video"
                                                 >
-                                                    🗑️ Delete
+                                                    ✏️
+                                                </button>
+                                                <button
+                                                    className="btn btn-icon btn-delete"
+                                                    onClick={() => handleDeleteVideo(video.id || video._id)}
+                                                    title="Delete Video"
+                                                >
+                                                    🗑️
                                                 </button>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                            )}
-                        </div>
-                    )}
+                            </div>
+                        )
+                    }
+
+                    {
+                        activeTab === 'materials' && (
+                            <div className="upload-section card">
+                                <form className="upload-form" onSubmit={handleMaterialSubmit}>
+                                    <h3>{editingMaterial ? 'Edit Material' : 'Upload Study Material'}</h3>
+                                    {formMessage.text && (
+                                        <div className={`form-message ${formMessage.type}`}>
+                                            {formMessage.text}
+                                        </div>
+                                    )}
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Material Title *</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter material title"
+                                                value={materialForm.title}
+                                                onChange={(e) => setMaterialForm({ ...materialForm, title: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Category *</label>
+                                            <select
+                                                value={materialForm.category}
+                                                onChange={(e) => setMaterialForm({ ...materialForm, category: e.target.value })}
+                                                required
+                                            >
+                                                <option value="">Select category</option>
+                                                <option>Data Structures</option>
+                                                <option>Programming</option>
+                                                <option>DBMS</option>
+                                                <option>Algorithms</option>
+                                                <option>Operating Systems</option>
+                                                <option>Networking</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Upload File {editingMaterial && '(Leave empty to keep existing)'} *</label>
+                                        <input
+                                            type="file"
+                                            id="material-file"
+                                            accept=".pdf,.ppt,.pptx,.doc,.docx"
+                                            onChange={(e) => setMaterialForm({ ...materialForm, file: e.target.files[0] })}
+                                            required={!editingMaterial}
+                                        />
+                                    </div>
+                                    <div className="upload-actions">
+                                        <button type="submit" className="btn btn-primary">
+                                            {editingMaterial ? '💾 Update Material' : '📤 Upload Material'}
+                                        </button>
+                                        {editingMaterial && (
+                                            <button type="button" className="btn btn-secondary" onClick={handleCancelMaterialEdit}>
+                                                ❌ Cancel Edit
+                                            </button>
+                                        )}
+                                    </div>
+                                </form>
+
+                                {/* Materials List */}
+                                <div className="content-list">
+                                    <h3>Manage Materials ({materials.length})</h3>
+                                    {materials.map(material => (
+                                        <div key={material.id || material._id} className="content-item">
+                                            <div className="content-info">
+                                                <strong>{material.title}</strong>
+                                                <span>{material.category} • {material.downloads} downloads</span>
+                                            </div>
+                                            <div className="material-actions">
+                                                <button
+                                                    className="btn btn-icon btn-edit"
+                                                    onClick={() => handleEditMaterial(material)}
+                                                    title="Edit Material"
+                                                >
+                                                    ✏️
+                                                </button>
+                                                <button
+                                                    className="btn btn-icon btn-delete"
+                                                    onClick={() => handleDeleteMaterial(material.id || material._id)}
+                                                    title="Delete Material"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    {
+                        activeTab === 'content' && (
+                            <div className="upload-section card">
+                                <form className="upload-form" onSubmit={handleContentUpdate}>
+                                    <h3>Manage Site Content</h3>
+                                    {formMessage.text && (
+                                        <div className={`form-message ${formMessage.type}`}>
+                                            {formMessage.text}
+                                        </div>
+                                    )}
+
+                                    <div className="form-section-title">Site Branding</div>
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Site Title</label>
+                                            <input
+                                                type="text"
+                                                value={contentForm.branding?.title || ''}
+                                                onChange={(e) => setContentForm({
+                                                    ...contentForm,
+                                                    branding: { ...contentForm.branding, title: e.target.value }
+                                                })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Logo Icon (Emoji)</label>
+                                            <input
+                                                type="text"
+                                                value={contentForm.branding?.icon || ''}
+                                                onChange={(e) => setContentForm({
+                                                    ...contentForm,
+                                                    branding: { ...contentForm.branding, icon: e.target.value }
+                                                })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-section-title">Home Hero Section</div>
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Badge Text</label>
+                                            <input
+                                                type="text"
+                                                value={contentForm.hero?.badge || ''}
+                                                onChange={(e) => setContentForm({
+                                                    ...contentForm,
+                                                    hero: { ...contentForm.hero, badge: e.target.value }
+                                                })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Title Start (Gradient)</label>
+                                            <input
+                                                type="text"
+                                                value={contentForm.hero?.titleStart || ''}
+                                                onChange={(e) => setContentForm({
+                                                    ...contentForm,
+                                                    hero: { ...contentForm.hero, titleStart: e.target.value }
+                                                })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Title End</label>
+                                        <input
+                                            type="text"
+                                            value={contentForm.hero?.titleEnd || ''}
+                                            onChange={(e) => setContentForm({
+                                                ...contentForm,
+                                                hero: { ...contentForm.hero, titleEnd: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Subtitle</label>
+                                        <input
+                                            type="text"
+                                            value={contentForm.hero?.subtitle || ''}
+                                            onChange={(e) => setContentForm({
+                                                ...contentForm,
+                                                hero: { ...contentForm.hero, subtitle: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Description</label>
+                                        <textarea
+                                            rows="3"
+                                            value={contentForm.hero?.description || ''}
+                                            onChange={(e) => setContentForm({
+                                                ...contentForm,
+                                                hero: { ...contentForm.hero, description: e.target.value }
+                                            })}
+                                        ></textarea>
+                                    </div>
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Primary Button Text</label>
+                                            <input
+                                                type="text"
+                                                value={contentForm.hero?.ctaPrimary || ''}
+                                                onChange={(e) => setContentForm({
+                                                    ...contentForm,
+                                                    hero: { ...contentForm.hero, ctaPrimary: e.target.value }
+                                                })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Secondary Button Text</label>
+                                            <input
+                                                type="text"
+                                                value={contentForm.hero?.ctaSecondary || ''}
+                                                onChange={(e) => setContentForm({
+                                                    ...contentForm,
+                                                    hero: { ...contentForm.hero, ctaSecondary: e.target.value }
+                                                })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-section-title">Mission Section</div>
+                                    <div className="form-group">
+                                        <label>Mission Title</label>
+                                        <input
+                                            type="text"
+                                            value={contentForm.mission?.title || ''}
+                                            onChange={(e) => setContentForm({
+                                                ...contentForm,
+                                                mission: { ...contentForm.mission, title: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Mission Text</label>
+                                        <textarea
+                                            rows="4"
+                                            value={contentForm.mission?.text || ''}
+                                            onChange={(e) => setContentForm({
+                                                ...contentForm,
+                                                mission: { ...contentForm.mission, text: e.target.value }
+                                            })}
+                                        ></textarea>
+                                    </div>
+
+                                    <div className="form-section-title">Features List</div>
+                                    {contentForm.features?.map((feature, index) => (
+                                        <div key={index} className="array-item-card">
+                                            <div className="form-row">
+                                                <div className="form-group">
+                                                    <label>Icon</label>
+                                                    <input
+                                                        type="text"
+                                                        value={feature.icon}
+                                                        onChange={(e) => {
+                                                            const newFeatures = [...contentForm.features];
+                                                            newFeatures[index].icon = e.target.value;
+                                                            setContentForm({ ...contentForm, features: newFeatures });
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Title</label>
+                                                    <input
+                                                        type="text"
+                                                        value={feature.title}
+                                                        onChange={(e) => {
+                                                            const newFeatures = [...contentForm.features];
+                                                            newFeatures[index].title = e.target.value;
+                                                            setContentForm({ ...contentForm, features: newFeatures });
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Description</label>
+                                                <input
+                                                    type="text"
+                                                    value={feature.desc}
+                                                    onChange={(e) => {
+                                                        const newFeatures = [...contentForm.features];
+                                                        newFeatures[index].desc = e.target.value;
+                                                        setContentForm({ ...contentForm, features: newFeatures });
+                                                    }}
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="btn btn-danger btn-sm"
+                                                onClick={() => {
+                                                    const newFeatures = contentForm.features.filter((_, i) => i !== index);
+                                                    setContentForm({ ...contentForm, features: newFeatures });
+                                                }}
+                                            >
+                                                Remove Feature
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline btn-sm mb-4"
+                                        onClick={() => setContentForm({
+                                            ...contentForm,
+                                            features: [...(contentForm.features || []), { icon: '✨', title: 'New Feature', desc: 'Description' }]
+                                        })}
+                                    >
+                                        + Add Feature
+                                    </button>
+
+                                    <div className="upload-actions">
+                                        <button type="submit" className="btn btn-primary">
+                                            💾 Save Site Content
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        )
+                    }
+
+                    {
+                        activeTab === 'messages' && (
+                            <div className="messages-section card">
+                                <h3>Contact Messages ({messages.length})</h3>
+                                {messages.length === 0 ? (
+                                    <p className="no-messages">No messages yet.</p>
+                                ) : (
+                                    <div className="messages-list">
+                                        {messages.map(msg => (
+                                            <div key={msg._id} className={`message-item ${!msg.isRead ? 'unread' : ''}`}>
+                                                <div className="message-header">
+                                                    <div className="message-sender">
+                                                        <strong>{msg.name}</strong>
+                                                        <span>{msg.email}</span>
+                                                    </div>
+                                                    <div className="message-date">
+                                                        {new Date(msg.createdAt).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                                <div className="message-subject">
+                                                    <strong>Subject:</strong> {msg.subject || 'No Subject'}
+                                                </div>
+                                                <div className="message-body">
+                                                    {msg.message}
+                                                </div>
+                                                <div className="message-actions">
+                                                    {!msg.isRead && (
+                                                        <button
+                                                            className="btn btn-outline btn-sm"
+                                                            onClick={() => handleMarkAsRead(msg._id)}
+                                                        >
+                                                            ✓ Mark as Read
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        className="btn btn-danger btn-sm"
+                                                        onClick={() => handleDeleteMessage(msg._id)}
+                                                    >
+                                                        🗑️ Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    }
                 </div>
             </section>
         </div>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Contact.css';
-import { contactAPI } from '../api';
+import { contactAPI, profileAPI } from '../api';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -12,6 +12,21 @@ const Contact = () => {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [contactInfo, setContactInfo] = useState(null);
+
+    useEffect(() => {
+        const fetchContactInfo = async () => {
+            try {
+                const response = await profileAPI.get();
+                if (response.success) {
+                    setContactInfo(response.data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch contact info:', err);
+            }
+        };
+        fetchContactInfo();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,6 +52,13 @@ const Contact = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Use fetched info or defaults
+    const info = contactInfo || {
+        email: 'madhankumar.c@university.edu',
+        phone: '+91 79048 63245',
+        location: 'Room 301, Computer Science Building, XYZ University Campus'
     };
 
     return (
@@ -144,21 +166,21 @@ const Contact = () => {
                                         <span className="info-icon">📧</span>
                                         <div>
                                             <strong>Email</strong>
-                                            <p>madhankumar.c@university.edu</p>
+                                            <p>{info.email}</p>
                                         </div>
                                     </li>
                                     <li>
                                         <span className="info-icon">📱</span>
                                         <div>
                                             <strong>Phone</strong>
-                                            <p>+91 79048 63245</p>
+                                            <p>{info.phone}</p>
                                         </div>
                                     </li>
                                     <li>
                                         <span className="info-icon">🏛️</span>
                                         <div>
                                             <strong>Office</strong>
-                                            <p>Room 301, Computer Science Building<br />XYZ University Campus</p>
+                                            <p>{info.location}</p>
                                         </div>
                                     </li>
                                     <li>

@@ -4,7 +4,8 @@
       "id": "1",
       "email": "admin@university.edu",
       "password": "$2a$12$7e0DYH4xZzGh2P8ekKvhxe2RkCuxkm6R9707bRe.RHVa4f7U8LtQ6",
-      "name": "Madhankumar C"
+      "name": "Madhankumar C",
+      "role": "root"
     }
   ],
   "videos": [
@@ -26,7 +27,7 @@
       "thumbnail": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=225&fit=crop",
       "duration": "38:15",
       "youtubeId": "dQw4w9WgXcQ",
-      "views": 0
+      "views": 1
     },
     {
       "id": "3",
@@ -69,6 +70,86 @@
       "views": 0
     }
   ],
-  "materials": [],
+  "materials": [
+    {
+      "id": "1",
+      "title": "Data Structures Lecture Notes - Unit 1",
+      "category": "Data Structures",
+      "type": "PDF",
+      "size": "2.4 MB",
+      "originalName": "DS_Unit1.pdf",
+      "downloads": 12
+    },
+    {
+      "id": "2",
+      "title": "Operating Systems - Process Management",
+      "category": "Operating Systems",
+      "type": "PPT",
+      "size": "5.1 MB",
+      "originalName": "OS_Process_Mgmt.pptx",
+      "downloads": 8
+    },
+    {
+      "id": "3",
+      "title": "DBMS Normalization Guide",
+      "category": "DBMS",
+      "type": "DOC",
+      "size": "1.2 MB",
+      "originalName": "Normalization_Guide.docx",
+      "downloads": 25
+    }
+  ],
+  "contactInfo": {
+    "email": "madhankumar@university.edu",
+    "phone": "+91 98765 43210",
+    "address": "Room 304, Computer Science Block, University Campus"
+  },
+  "profile": {
+    "name": "",
+    "title": "",
+    "department": "",
+    "email": "",
+    "phone": "",
+    "location": "",
+    "about": "",
+    "experience": "",
+    "education": "",
+    "image": "",
+    "academicBackground": [],
+    "teachingInterests": [],
+    "contributionStats": {
+      "lectures": "",
+      "materials": "",
+      "students": "",
+      "subjects": ""
+    },
+    "social": {
+      "linkedin": "",
+      "scholar": "",
+      "researchgate": ""
+    },
+    "contributionTitle": "Custom Contribution Title",
+    "contributionText": "This is a custom contribution description."
+  },
+  "siteContent": {
+    "branding": {
+      "title": "hdkafhdks",
+      "icon": ""
+    },
+    "hero": {
+      "badge": "dsfjkds",
+      "titleStart": "uhsadfuids",
+      "titleEnd": "jkhasdfk",
+      "subtitle": "dsjfhdsjf",
+      "description": "dfskjdhfudshfdjkfdsjf",
+      "ctaPrimary": "h",
+      "ctaSecondary": "j"
+    },
+    "mission": {
+      "title": "kjdshafkudshfdsluf",
+      "text": "jkdsfhkajads"
+    },
+    "features": []
+  },
   "contacts": []
 }

@@ -6,6 +6,7 @@ import './Home.css';
 const Home = () => {
     const [recentVideos, setRecentVideos] = useState([]);
     const [stats, setStats] = useState({ videos: 0, materials: 0, views: 0, downloads: 0 });
+    const [content, setContent] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,6 +15,15 @@ const Home = () => {
 
     const fetchData = async () => {
         try {
+            // Check for content API availability (graceful degradation)
+            let contentData = null;
+            try {
+                const contentRes = await fetch('http://localhost:5000/api/content').then(res => res.json());
+                if (contentRes.success) contentData = contentRes.data;
+            } catch (e) {
+                console.warn('Content API not available');
+            }
+
             const [videosRes, statsRes] = await Promise.all([
                 videosAPI.getAll(),
                 statsAPI.getPublic()
@@ -25,6 +35,9 @@ const Home = () => {
             if (statsRes.success) {
                 setStats(statsRes.data);
             }
+            if (contentData) {
+                setContent(contentData);
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -32,12 +45,30 @@ const Home = () => {
         }
     };
 
-    const features = [
+    // Default content if API fails or data missing
+    const defaultFeatures = [
         { icon: '🎬', title: 'Video Lectures', desc: 'High-quality video content for visual learning' },
         { icon: '📚', title: 'Study Materials', desc: 'Comprehensive notes, PPTs, and documents' },
         { icon: '🎓', title: 'Expert Faculty', desc: 'Learn from experienced professors' },
         { icon: '💡', title: 'Interactive Learning', desc: 'Engage with dynamic content' }
     ];
+
+    const displayContent = {
+        hero: content?.hero || {
+            badge: '🎓 E-Learning Portal',
+            titleStart: 'Faculty Contribution',
+            titleEnd: 'in Development of E-Content',
+            subtitle: 'Empowering Learning Through Digital Content',
+            description: 'Welcome to our educational portal where quality meets accessibility. Explore comprehensive video lectures, study materials, and resources designed to enhance your learning experience.',
+            ctaPrimary: '🎬 Browse Videos',
+            ctaSecondary: '📚 Study Materials'
+        },
+        mission: content?.mission || {
+            title: 'Our Mission',
+            text: 'To create high-quality, accessible digital learning resources that empower students to excel in their academic journey. Through carefully curated video lectures, comprehensive study materials, and interactive content, we aim to bridge the gap between traditional classroom learning and modern educational needs.'
+        },
+        features: content?.features || defaultFeatures
+    };
 
     return (
         <div className="home-page">
@@ -57,36 +88,28 @@ const Home = () => {
                 </div>
                 <div className="container hero-content">
                     <div className="hero-text animate-slide-left">
-                        <span className="hero-badge">🎓 E-Learning Portal</span>
+                        <span className="hero-badge">{displayContent.hero.badge}</span>
                         <h1 className="hero-title">
-                            <span className="gradient-text">Faculty Contribution</span> in Development of E-Content
+                            <span className="gradient-text">{displayContent.hero.titleStart}</span> {displayContent.hero.titleEnd}
                         </h1>
                         <p className="hero-subtitle">
-                            Empowering Learning Through Digital Content
+                            {displayContent.hero.subtitle}
                         </p>
                         <p className="hero-description">
-                            Welcome to our educational portal where quality meets accessibility.
-                            Explore comprehensive video lectures, study materials, and resources
-                            designed to enhance your learning experience.
+                            {displayContent.hero.description}
                         </p>
                         <div className="hero-buttons">
                             <Link to="/videos" className="btn btn-accent pulse">
-                                🎬 Browse Videos
+                                {displayContent.hero.ctaPrimary}
                             </Link>
                             <Link to="/materials" className="btn btn-outline hero-btn-outline">
-                                📚 Study Materials
+                                {displayContent.hero.ctaSecondary}
                             </Link>
                         </div>
                     </div>
                     <div className="hero-image animate-slide-right">
                         <div className="hero-image-wrapper float">
-                            <div className="hero-stats-card glass">
-                                <span className="stats-icon">📊</span>
-                                <div className="stats-info">
-                                    <strong>{stats.views || '1000+'}+</strong>
-                                    <span>Total Views</span>
-                                </div>
-                            </div>
+
                             <img
                                 src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=500&h=600&fit=crop"
                                 alt="Faculty Teaching"
@@ -107,7 +130,7 @@ const Home = () => {
                 <div className="container">
                     <h2 className="section-title">Why Choose Us?</h2>
                     <div className="features-grid stagger-animate">
-                        {features.map((feature, index) => (
+                        {displayContent.features.map((feature, index) => (
                             <div key={index} className="feature-card card">
                                 <span className="feature-icon">{feature.icon}</span>
                                 <h3>{feature.title}</h3>
@@ -132,11 +155,7 @@ const Home = () => {
                             <span className="stat-number">{stats.materials || 100}+</span>
                             <span className="stat-label">Study Materials</span>
                         </div>
-                        <div className="stat-box animate-scale-in" style={{ animationDelay: '0.2s' }}>
-                            <span className="stat-icon">👁️</span>
-                            <span className="stat-number">{stats.views || 1000}+</span>
-                            <span className="stat-label">Total Views</span>
-                        </div>
+
                         <div className="stat-box animate-scale-in" style={{ animationDelay: '0.3s' }}>
                             <span className="stat-icon">⬇️</span>
                             <span className="stat-number">{stats.downloads || 500}+</span>
@@ -194,12 +213,9 @@ const Home = () => {
                 <div className="container">
                     <div className="mission-content">
                         <div className="mission-icon float">🎯</div>
-                        <h2 className="section-title">Our Mission</h2>
+                        <h2 className="section-title">{displayContent.mission.title}</h2>
                         <p className="mission-text">
-                            To create high-quality, accessible digital learning resources that empower students
-                            to excel in their academic journey. Through carefully curated video lectures,
-                            comprehensive study materials, and interactive content, we aim to bridge the gap
-                            between traditional classroom learning and modern educational needs.
+                            {displayContent.mission.text}
                         </p>
                     </div>
                 </div>

@@ -10,12 +10,27 @@ const Navbar = () => {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [siteTitle, setSiteTitle] = useState('E-Content');
   const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }, [isDark]);
+
+  useEffect(() => {
+    const fetchBranding = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/content').then(r => r.json());
+        if (res.success && res.data.branding) {
+          setSiteTitle(res.data.branding.title || 'E-Content');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchBranding();
+  }, []);
 
   const toggleTheme = () => setIsDark(!isDark);
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -44,7 +59,7 @@ const Navbar = () => {
       <div className="navbar-container container">
         <Link to="/" className="navbar-logo" onClick={closeMenu}>
           <span className="logo-icon">🎓</span>
-          <span className="logo-text">E-Content</span>
+          <span className="logo-text">{siteTitle}</span>
         </Link>
 
         {/* Search Bar - Desktop */}

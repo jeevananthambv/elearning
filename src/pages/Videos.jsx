@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Videos.css';
 import { videosAPI } from '../api';
 
 const subjects = ['All', 'Data Structures', 'Programming', 'DBMS', 'Algorithms', 'Operating Systems', 'Networking'];
 
 const Videos = () => {
+    const location = useLocation();
     const [videosData, setVideosData] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState('All');
     const [selectedVideo, setSelectedVideo] = useState(null);
@@ -15,6 +17,18 @@ const Videos = () => {
     useEffect(() => {
         fetchVideos();
     }, [selectedSubject]);
+
+    // Handle Deep Linking / State
+    useEffect(() => {
+        if (location.state?.play && videosData.length > 0) {
+            const videoToPlay = videosData.find(v => v._id === location.state.play || v.id === location.state.play);
+            if (videoToPlay) {
+                openVideoModal(videoToPlay);
+                // Clear state to prevent reopening on generic refresh (optional but good practice, though hard with just React Router safely)
+                window.history.replaceState({}, document.title);
+            }
+        }
+    }, [videosData, location.state]);
 
     const fetchVideos = async () => {
         try {

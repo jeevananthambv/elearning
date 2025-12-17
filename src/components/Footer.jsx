@@ -1,8 +1,35 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import './Footer.css';
+import { profileAPI } from '../api';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
+    const [contactInfo, setContactInfo] = useState({
+        email: 'madhankumar.c@university.edu',
+        phone: '+91 79048 63245',
+        location: 'Department of Computer Science',
+        social: {}
+    });
+
+    useEffect(() => {
+        const fetchContactInfo = async () => {
+            try {
+                const response = await profileAPI.get();
+                if (response.success && response.data) {
+                    setContactInfo({
+                        email: response.data.email,
+                        phone: response.data.phone,
+                        location: response.data.department || response.data.location,
+                        social: response.data.social || {}
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to fetch footer info:', err);
+            }
+        };
+        fetchContactInfo();
+    }, []);
 
     return (
         <footer className="footer">
@@ -32,25 +59,31 @@ const Footer = () => {
                     <div className="footer-section footer-contact">
                         <h4 className="footer-heading">Contact Info</h4>
                         <ul>
-                            <li>📧 madhankumar.c@university.edu</li>
-                            <li>📱 +91 79048 63245</li>
-                            <li>🏛️ Department of Computer Science</li>
+                            <li>📧 {contactInfo.email}</li>
+                            <li>📱 {contactInfo.phone}</li>
+                            <li>🏛️ {contactInfo.location}</li>
                         </ul>
                     </div>
 
                     <div className="footer-section footer-social">
                         <h4 className="footer-heading">Follow Us</h4>
                         <div className="social-links">
-                            <a href="#" aria-label="YouTube" className="social-link">
-                                <span>▶</span>
-                            </a>
-                            <a href="#" aria-label="LinkedIn" className="social-link">
-                                <span>in</span>
-                            </a>
-                            <a href="#" aria-label="Twitter" className="social-link">
-                                <span>𝕏</span>
-                            </a>
-                            <a href="#" aria-label="Email" className="social-link">
+                            {contactInfo.social?.linkedin && (
+                                <a href={contactInfo.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="social-link">
+                                    <span>in</span>
+                                </a>
+                            )}
+                            {contactInfo.social?.scholar && (
+                                <a href={contactInfo.social.scholar} target="_blank" rel="noopener noreferrer" aria-label="Google Scholar" className="social-link">
+                                    <span>🎓</span>
+                                </a>
+                            )}
+                            {contactInfo.social?.researchgate && (
+                                <a href={contactInfo.social.researchgate} target="_blank" rel="noopener noreferrer" aria-label="ResearchGate" className="social-link">
+                                    <span>RG</span>
+                                </a>
+                            )}
+                            <a href={`mailto:${contactInfo.email}`} aria-label="Email" className="social-link">
                                 <span>✉</span>
                             </a>
                         </div>

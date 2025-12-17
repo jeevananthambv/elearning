@@ -167,14 +167,223 @@
     color: var(--color-text-light);
 }
 
-@media (max-width: 768px) {
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablets (768px - 992px) */
+@media (min-width: 768px) and (max-width: 992px) {
+    .search-header {
+        padding: var(--spacing-xl) 0;
+    }
+
+    .search-header h1 {
+        font-size: 2rem;
+    }
+
     .search-tabs {
         justify-content: center;
     }
 
     .search-tab {
+        padding: var(--spacing-sm) var(--spacing-lg);
+    }
+
+    .results-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    .result-info h3 {
+        font-size: 1rem;
+    }
+}
+
+/* Large phones (480px - 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
+    .search-header {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .search-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .search-header p {
+        font-size: 0.95rem;
+    }
+
+    .search-tabs {
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .search-tab {
         flex: 1;
-        min-width: 100px;
+        min-width: 80px;
         text-align: center;
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.9rem;
+    }
+
+    .results-section h2 {
+        font-size: 1.25rem;
+    }
+
+    .results-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .result-card {
+        padding: var(--spacing-sm);
+    }
+
+    .material-icon {
+        font-size: 2rem;
+    }
+
+    .result-info h3 {
+        font-size: 0.95rem;
+    }
+
+    .result-info p {
+        font-size: 0.85rem;
+    }
+
+    .no-results {
+        padding: var(--spacing-xl);
+    }
+
+    .no-results-icon {
+        font-size: 3rem;
+    }
+
+    .no-results h3 {
+        font-size: 1.1rem;
+    }
+
+    .no-results-actions {
+        gap: var(--spacing-sm);
+    }
+}
+
+/* Small phones (< 480px) */
+@media (max-width: 479px) {
+    .search-header {
+        padding: var(--spacing-md) 0;
+    }
+
+    .search-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .search-header p {
+        font-size: 0.9rem;
+    }
+
+    .search-tabs {
+        justify-content: stretch;
+        gap: 4px;
+    }
+
+    .search-tab {
+        flex: 1;
+        min-width: auto;
+        text-align: center;
+        padding: 10px 8px;
+        font-size: 0.85rem;
+    }
+
+    .search-loading {
+        padding: var(--spacing-lg);
+    }
+
+    .results-section {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .results-section h2 {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .results-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .results-list {
+        gap: var(--spacing-sm);
+    }
+
+    .result-card {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-sm);
+    }
+
+    .result-duration {
+        padding: 2px 5px;
+        font-size: 0.75rem;
+    }
+
+    .material-icon {
+        font-size: 1.75rem;
+    }
+
+    .result-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+
+    .result-info h3 {
+        font-size: 0.9rem;
+    }
+
+    .result-info p {
+        font-size: 0.8rem;
+    }
+
+    .no-results {
+        padding: var(--spacing-lg);
+    }
+
+    .no-results-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .no-results h3 {
+        font-size: 1rem;
+    }
+
+    .no-results p {
+        font-size: 0.9rem;
+    }
+
+    .no-results-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .no-results-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Very small devices (< 320px) */
+@media (max-width: 320px) {
+    .search-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .search-tab {
+        padding: 8px 6px;
+        font-size: 0.8rem;
+    }
+
+    .result-info h3 {
+        font-size: 0.85rem;
+    }
+
+    .material-icon {
+        font-size: 1.5rem;
     }
 }
