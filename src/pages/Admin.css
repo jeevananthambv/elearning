@@ -238,6 +238,11 @@
 
 .upload-form input[type="file"] {
     padding: var(--spacing-sm);
+    background: var(--color-background);
+    color: var(--color-text);
+    min-height: 50px;
+    display: flex;
+    align-items: center;
 }
 
 .upload-actions {
