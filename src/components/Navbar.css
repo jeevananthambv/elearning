@@ -297,15 +297,21 @@
         transform: translateX(100%);
         transition: transform var(--transition-normal);
         overflow-y: auto;
+        z-index: 9999;
+        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+        visibility: hidden;
+    }
+
+    .navbar-menu.active {
+        transform: translateX(0);
+        visibility: visible;
     }
 
     [data-theme="dark"] .navbar-menu {
         background: var(--color-card);
     }
 
-    .navbar-menu.active {
-        transform: translateX(0);
-    }
+
 
     .navbar-item {
         width: 100%;
