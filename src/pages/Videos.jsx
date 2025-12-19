@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import './Videos.css';
 import { videosAPI } from '../api';
@@ -13,24 +13,7 @@ const Videos = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch videos from backend
-    useEffect(() => {
-        fetchVideos();
-    }, [selectedSubject]);
-
-    // Handle Deep Linking / State
-    useEffect(() => {
-        if (location.state?.play && videosData.length > 0) {
-            const videoToPlay = videosData.find(v => v._id === location.state.play || v.id === location.state.play);
-            if (videoToPlay) {
-                openVideoModal(videoToPlay);
-                // Clear state to prevent reopening on generic refresh (optional but good practice, though hard with just React Router safely)
-                window.history.replaceState({}, document.title);
-            }
-        }
-    }, [videosData, location.state]);
-
-    const fetchVideos = async () => {
+    const fetchVideos = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -46,9 +29,9 @@ const Videos = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedSubject]);
 
-    const openVideoModal = async (video) => {
+    const openVideoModal = useCallback(async (video) => {
         setSelectedVideo(video);
         // Track view
         try {
@@ -56,7 +39,24 @@ const Videos = () => {
         } catch (err) {
             console.error('Error tracking view:', err);
         }
-    };
+    }, []);
+
+    // Fetch videos from backend
+    useEffect(() => {
+        fetchVideos();
+    }, [fetchVideos]);
+
+    // Handle Deep Linking / State
+    useEffect(() => {
+        if (location.state?.play && videosData.length > 0) {
+            const videoToPlay = videosData.find(v => v._id === location.state.play || v.id === location.state.play);
+            if (videoToPlay) {
+                openVideoModal(videoToPlay);
+                // Clear state to prevent reopening on generic refresh (optional but good practice, though hard with just React Router safely)
+                window.history.replaceState({}, document.title);
+            }
+        }
+    }, [videosData, location.state, openVideoModal]);
 
     const closeVideoModal = () => {
         setSelectedVideo(null);

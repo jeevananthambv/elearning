@@ -81,7 +81,7 @@ const getData = () => {
 };
 
 // Initialize data
-let data = initializeData();
+initializeData();
 
 // Middleware
 app.use(cors({
@@ -145,7 +145,7 @@ const protect = (req, res, next) => {
 
         req.user = user;
         next();
-    } catch (error) {
+    } catch (_error) {
         return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
     }
 };
@@ -403,7 +403,7 @@ app.get('/api/content', async (req, res) => {
     try {
         const data = await getData();
         res.json({ success: true, data: data.siteContent || {} });
-    } catch (error) {
+    } catch (_error) {
         res.status(500).json({ success: false, message: 'Error fetching content' });
     }
 });
@@ -414,7 +414,7 @@ app.put('/api/content', protect, async (req, res) => {
         data.siteContent = { ...data.siteContent, ...req.body };
         saveData(data);
         res.json({ success: true, data: data.siteContent });
-    } catch (error) {
+    } catch (_error) {
         res.status(500).json({ success: false, message: 'Error updating content' });
     }
 });

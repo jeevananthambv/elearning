@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import './Materials.css';
 import { materialsAPI } from '../api';
@@ -31,7 +31,7 @@ const Materials = () => {
     // Fetch materials from backend
     useEffect(() => {
         fetchMaterials();
-    }, [selectedCategory, selectedType]);
+    }, [fetchMaterials]);
 
     // Handle Highlight
     useEffect(() => {
@@ -45,7 +45,7 @@ const Materials = () => {
         }
     }, [materialsData, location.state]);
 
-    const fetchMaterials = async () => {
+    const fetchMaterials = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -60,7 +60,7 @@ const Materials = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedCategory, selectedType]);
 
     const handleDownload = (material) => {
         window.open(materialsAPI.getDownloadUrl(material._id), '_blank');

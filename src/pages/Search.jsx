@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { videosAPI, materialsAPI } from '../api';
 import './Search.css';
@@ -10,13 +10,7 @@ const Search = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('all');
 
-    useEffect(() => {
-        if (query) {
-            searchContent();
-        }
-    }, [query]);
-
-    const searchContent = async () => {
+    const searchContent = useCallback(async () => {
         setLoading(true);
         try {
             const [videosRes, materialsRes] = await Promise.all([
@@ -43,7 +37,13 @@ const Search = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [query]);
+
+    useEffect(() => {
+        if (query) {
+            searchContent();
+        }
+    }, [query, searchContent]);
 
     const totalResults = results.videos.length + results.materials.length;
 
@@ -64,7 +64,7 @@ const Search = () => {
                     <h1>Search Results</h1>
                     <p>
                         {loading ? 'Searching...' : (
-                            <>Found <strong>{totalResults}</strong> results for "<strong>{query}</strong>"</>
+                            <>Found <strong>{totalResults}</strong> results for &quot;<strong>{query}</strong>&quot;</>
                         )}
                     </p>
                 </div>

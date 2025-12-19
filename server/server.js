@@ -83,7 +83,7 @@ const getData = () => {
 };
 
 // Initialize data
-let data = initializeData();
+initializeData();
 
 // Middleware
 app.use(cors({
@@ -147,10 +147,20 @@ const protect = (req, res, next) => {
 
         req.user = user;
         next();
-    } catch (error) {
+    } catch (_error) {
         return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
     }
 };
+
+// ==================== VIDEO ROUTES ====================
+app.get('/api/videos', (req, res) => {
+    const data = getData();
+    let videos = data.videos;
+    if (req.query.category && req.query.category !== 'All') {
+        videos = videos.filter(v => v.subject === req.query.category);
+    }
+    res.json({ success: true, count: videos.length, data: videos.map(v => ({ ...v, _id: v.id })) });
+});
 
 // ==================== AUTH ROUTES ====================
 app.post('/api/auth/login', async (req, res) => {
@@ -399,7 +409,7 @@ app.get('/api/content', async (req, res) => {
     try {
         const data = await getData();
         res.json({ success: true, data: data.siteContent || {} });
-    } catch (error) {
+    } catch (_error) {
         res.status(500).json({ success: false, message: 'Error fetching content' });
     }
 });
@@ -410,7 +420,7 @@ app.put('/api/content', protect, async (req, res) => {
         data.siteContent = { ...data.siteContent, ...req.body };
         saveData(data);
         res.json({ success: true, data: data.siteContent });
-    } catch (error) {
+    } catch (_error) {
         res.status(500).json({ success: false, message: 'Error updating content' });
     }
 });

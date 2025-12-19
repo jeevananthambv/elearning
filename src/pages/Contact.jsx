@@ -79,14 +79,14 @@ const Contact = () => {
                         <div className="contact-form-wrapper">
                             <h2>Send a Message</h2>
                             <p className="form-intro">
-                                Have a question or feedback? Fill out the form below and I'll get back to you soon.
+                                Have a question or feedback? Fill out the form below and I&apos;ll get back to you soon.
                             </p>
 
                             {submitted ? (
                                 <div className="success-message">
                                     <span className="success-icon">✓</span>
                                     <h3>Message Sent!</h3>
-                                    <p>Thank you for reaching out. I'll respond within 24-48 hours.</p>
+                                    <p>Thank you for reaching out. I&apos;ll respond within 24-48 hours.</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="contact-form">

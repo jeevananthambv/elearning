@@ -20,7 +20,7 @@ const Home = () => {
             try {
                 const contentRes = await fetch('http://localhost:5000/api/content').then(res => res.json());
                 if (contentRes.success) contentData = contentRes.data;
-            } catch (e) {
+            } catch (_e) {
                 console.warn('Content API not available');
             }
 

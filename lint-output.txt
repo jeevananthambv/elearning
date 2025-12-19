@@ -1,0 +1,15 @@
+
+> faculty-website@0.0.0 lint
+> eslint .
+
+
+D:\Econtent\faculty-website\src\pages\Contact.jsx
+  82:91  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  89:69  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+D:\Econtent\faculty-website\src\pages\Search.jsx
+  67:81   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  67:106  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+Ô£û 4 problems (4 errors, 0 warnings)
+

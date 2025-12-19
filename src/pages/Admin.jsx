@@ -10,12 +10,12 @@ const Admin = () => {
     const [loginLoading, setLoginLoading] = useState(false);
 
     // Dashboard Data State
-    const [loading, setLoading] = useState(false);
+    const [_loading, setLoading] = useState(false);
     const [stats, setStats] = useState(null);
     const [videos, setVideos] = useState([]);
     const [materials, setMaterials] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [profile, setProfile] = useState(null);
+    const [_profile, setProfile] = useState(null);
 
     // Additional state for editing
     const [editingVideo, setEditingVideo] = useState(null);
@@ -28,10 +28,9 @@ const Admin = () => {
         title: '', category: '', file: null
     });
 
+
     const [profileForm, setProfileForm] = useState({
         name: '', title: '', department: '', email: '', phone: '', location: '', about: '', experience: '', education: '', image: '',
-        academicBackground: [],
-        teachingInterests: [],
         academicBackground: [],
         teachingInterests: [],
         social: { linkedin: '', scholar: '', researchgate: '' },
@@ -39,6 +38,7 @@ const Admin = () => {
         contributionText: '',
         contributionStats: { lectures: '', materials: '', students: '', subjects: '' }
     });
+
     const [contentForm, setContentForm] = useState({
         hero: { badge: '', titleStart: '', titleEnd: '', subtitle: '', description: '', ctaPrimary: '', ctaSecondary: '' },
         mission: { title: '', text: '' },

@@ -33,13 +33,13 @@ export const protect = async (req, res, next) => {
 
             req.user = user;
             next();
-        } catch (error) {
+        } catch (_error) {
             return res.status(401).json({
                 success: false,
                 message: 'Token is invalid or expired'
             });
         }
-    } catch (error) {
+    } catch (_error) {
         res.status(500).json({
             success: false,
             message: 'Server error in authentication'
