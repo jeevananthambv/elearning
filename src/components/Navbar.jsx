@@ -55,129 +55,150 @@ const Navbar = () => {
     { path: '/contact', label: 'Contact' },
   ];
 
-  // Mobile menu inline styles for guaranteed visibility
-  const mobileMenuStyle = isOpen ? {
-    display: 'flex',
-    position: 'fixed',
-    top: '55px',
-    left: '0',
-    right: '0',
-    bottom: '0',
-    flexDirection: 'column',
-    background: isDark ? '#1a1a1a' : '#ffffff',
-    zIndex: '99999',
-    padding: '0',
-    gap: '0',
-    overflowY: 'auto',
-    listStyle: 'none',
-  } : {};
-
-  const mobileItemStyle = isOpen ? {
-    width: '100%',
-    textAlign: 'center',
-    borderBottom: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e5e7eb',
-  } : {};
-
-  const mobileLinkStyle = isOpen ? {
-    display: 'block',
-    padding: '18px 20px',
-    fontSize: '1.1rem',
-    fontWeight: '500',
-    color: isDark ? '#ffffff' : '#1a1a1a',
-    textDecoration: 'none',
-  } : {};
-
   return (
-    <nav className="navbar">
-      <div className="navbar-container container">
-        <Link to="/" className="navbar-logo" onClick={closeMenu}>
-          <span className="logo-icon">🎓</span>
-          <span className="logo-text">{siteTitle}</span>
-        </Link>
+    <>
+      <nav className="navbar">
+        <div className="navbar-container container">
+          <Link to="/" className="navbar-logo" onClick={closeMenu}>
+            <span className="logo-icon">🎓</span>
+            <span className="logo-text">{siteTitle}</span>
+          </Link>
 
-        {/* Search Bar - Desktop */}
-        <form className="navbar-search" onSubmit={handleSearch}>
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Search videos, materials..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </form>
-
-        <div className="navbar-actions">
-          {/* Search Toggle - Mobile */}
-          <button
-            className="navbar-action-btn search-toggle"
-            onClick={() => setShowSearch(!showSearch)}
-            aria-label="Toggle search"
-          >
-            🔍
-          </button>
-
-          {/* Theme Toggle */}
-          <button
-            className="navbar-action-btn theme-toggle"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            {isDark ? '☀️' : '🌙'}
-          </button>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className={`navbar-toggle ${isOpen ? 'active' : ''}`}
-            onClick={toggleMenu}
-            aria-label="Toggle navigation"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </div>
-
-        {/* Mobile Search */}
-        {showSearch && (
-          <form className="navbar-search-mobile" onSubmit={handleSearch}>
+          {/* Search Bar - Desktop */}
+          <form className="navbar-search" onSubmit={handleSearch}>
             <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search videos, materials..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              autoFocus
             />
-            <button type="button" className="close-search" onClick={() => setShowSearch(false)}>✕</button>
           </form>
-        )}
 
-        <ul className={`navbar-menu ${isOpen ? 'active' : ''}`} style={mobileMenuStyle}>
-          {navLinks.map((link) => (
-            <li key={link.path} className="navbar-item" style={mobileItemStyle}>
-              <NavLink
-                to={link.path}
-                className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}
-                onClick={closeMenu}
-                style={mobileLinkStyle}
-              >
-                {link.label}
-              </NavLink>
+          {/* Desktop Menu */}
+          <ul className="navbar-menu desktop-menu">
+            {navLinks.map((link) => (
+              <li key={link.path} className="navbar-item">
+                <NavLink
+                  to={link.path}
+                  className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+            <li className="navbar-item navbar-item-cta">
+              <Link to="/admin" className="btn btn-accent">
+                Admin
+              </Link>
             </li>
-          ))}
-          <li className="navbar-item navbar-item-cta" style={mobileItemStyle}>
-            <Link
-              to="/admin"
-              className="btn btn-accent"
-              onClick={closeMenu}
-              style={isOpen ? { width: '90%', margin: '16px auto', display: 'block', textAlign: 'center' } : {}}
+          </ul>
+
+          <div className="navbar-actions">
+            {/* Search Toggle - Mobile */}
+            <button
+              className="navbar-action-btn search-toggle"
+              onClick={() => setShowSearch(!showSearch)}
+              aria-label="Toggle search"
             >
-              Admin
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </nav>
+              🔍
+            </button>
+
+            {/* Theme Toggle */}
+            <button
+              className="navbar-action-btn theme-toggle"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {isDark ? '☀️' : '🌙'}
+            </button>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              className={`navbar-toggle ${isOpen ? 'active' : ''}`}
+              onClick={toggleMenu}
+              aria-label="Toggle navigation"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+
+          {/* Mobile Search */}
+          {showSearch && (
+            <form className="navbar-search-mobile" onSubmit={handleSearch}>
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+              <button type="button" className="close-search" onClick={() => setShowSearch(false)}>✕</button>
+            </form>
+          )}
+        </div>
+      </nav>
+
+      {/* Mobile Menu Overlay - Rendered outside navbar */}
+      {isOpen && (
+        <div
+          className="mobile-menu-overlay"
+          style={{
+            position: 'fixed',
+            top: '55px',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+            zIndex: 99999,
+            display: 'flex',
+            flexDirection: 'column',
+            overflowY: 'auto',
+          }}
+        >
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              onClick={closeMenu}
+              style={{
+                display: 'block',
+                padding: '18px 24px',
+                fontSize: '1.2rem',
+                fontWeight: '500',
+                color: isDark ? '#ffffff' : '#1a1a1a',
+                textDecoration: 'none',
+                borderBottom: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e5e7eb',
+                textAlign: 'center',
+              }}
+            >
+              {link.label}
+            </NavLink>
+          ))}
+          <Link
+            to="/admin"
+            onClick={closeMenu}
+            style={{
+              display: 'block',
+              padding: '18px 24px',
+              margin: '16px 20px',
+              fontSize: '1.1rem',
+              fontWeight: '600',
+              color: '#1a1a1a',
+              textDecoration: 'none',
+              textAlign: 'center',
+              backgroundColor: '#c9a962',
+              borderRadius: '8px',
+            }}
+          >
+            Admin
+          </Link>
+        </div>
+      )}
+    </>
   );
 };
 
