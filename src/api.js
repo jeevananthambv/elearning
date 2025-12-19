@@ -52,6 +52,8 @@ export const authAPI = {
                 }
             };
         } catch (error) {
+            console.error('Login error:', error.code, error.message);
+
             // If user doesn't exist and using default admin credentials, auto-create
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
                 // Check if using default admin credentials
@@ -73,18 +75,43 @@ export const authAPI = {
                             }
                         };
                     } catch (createError) {
-                        console.error('Create user error:', createError);
-                        return { success: false, message: 'Failed to setup admin account. Please try again.' };
+                        console.error('Create user error:', createError.code, createError.message);
+                        // Check if email/password auth is enabled
+                        if (createError.code === 'auth/operation-not-allowed') {
+                            return {
+                                success: false,
+                                message: 'Email/Password login is not enabled. Please enable it in Firebase Console → Authentication → Sign-in method.'
+                            };
+                        }
+                        return { success: false, message: 'Failed to setup admin account: ' + createError.message };
                     }
                 }
             }
-            console.error('Login error:', error);
+
             // Provide user-friendly error messages
             let message = 'Invalid email or password';
-            if (error.code === 'auth/too-many-requests') {
-                message = 'Too many failed attempts. Please try again later.';
-            } else if (error.code === 'auth/network-request-failed') {
-                message = 'Network error. Please check your connection.';
+            switch (error.code) {
+                case 'auth/operation-not-allowed':
+                    message = 'Email/Password login is not enabled. Please enable it in Firebase Console.';
+                    break;
+                case 'auth/too-many-requests':
+                    message = 'Too many failed attempts. Please try again later.';
+                    break;
+                case 'auth/network-request-failed':
+                    message = 'Network error. Please check your connection.';
+                    break;
+                case 'auth/invalid-email':
+                    message = 'Invalid email address format.';
+                    break;
+                case 'auth/user-disabled':
+                    message = 'This account has been disabled.';
+                    break;
+                case 'auth/wrong-password':
+                case 'auth/invalid-credential':
+                    message = 'Invalid email or password.';
+                    break;
+                default:
+                    message = error.message || 'Login failed. Please try again.';
             }
             return { success: false, message };
         }
