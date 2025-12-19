@@ -887,8 +887,8 @@ const Admin = () => {
                                     + Add Interest
                                 </button>
                                 <div className="upload-actions">
-                                    <button type="submit" className="btn btn-primary">
-                                        💾 Save Changes
+                                    <button type="submit" className="btn btn-primary" disabled={uploading}>
+                                        {uploading ? '💾 Saving...' : '💾 Save Changes'}
                                     </button>
                                 </div>
                             </form>
@@ -995,8 +995,8 @@ const Admin = () => {
                                         )}
                                     </div>
                                     <div className="upload-actions">
-                                        <button type="submit" className="btn btn-primary">
-                                            {editingVideo ? '💾 Update Video' : '➕ Add Video'}
+                                        <button type="submit" className="btn btn-primary" disabled={uploading}>
+                                            {uploading ? (editingVideo ? '💾 Updating...' : '➕ Adding...') : (editingVideo ? '💾 Update Video' : '➕ Add Video')}
                                         </button>
                                         {editingVideo && (
                                             <button type="button" className="btn btn-secondary" onClick={handleCancelVideoEdit}>
@@ -1370,8 +1370,8 @@ const Admin = () => {
                                     </button>
 
                                     <div className="upload-actions">
-                                        <button type="submit" className="btn btn-primary">
-                                            💾 Save Site Content
+                                        <button type="submit" className="btn btn-primary" disabled={uploading}>
+                                            {uploading ? '💾 Saving...' : '💾 Save Site Content'}
                                         </button>
                                     </div>
                                 </form>
