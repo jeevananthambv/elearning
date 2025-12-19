@@ -47,14 +47,15 @@ const Home = () => {
     ];
 
     const displayContent = {
-        hero: content?.hero || {
-            badge: '🎓 E-Learning Portal',
-            titleStart: 'Faculty Contribution',
-            titleEnd: 'in Development of E-Content',
-            subtitle: 'Empowering Learning Through Digital Content',
-            description: 'Welcome to our educational portal where quality meets accessibility. Explore comprehensive video lectures, study materials, and resources designed to enhance your learning experience.',
-            ctaPrimary: '🎬 Browse Videos',
-            ctaSecondary: '📚 Study Materials'
+        hero: {
+            badge: content?.hero?.badge || '🎓 E-Learning Portal',
+            titleStart: content?.hero?.titleStart || 'Faculty Contribution',
+            titleEnd: content?.hero?.titleEnd || 'in Development of E-Content',
+            subtitle: content?.hero?.subtitle || 'Empowering Learning Through Digital Content',
+            description: content?.hero?.description || 'Welcome to our educational portal where quality meets accessibility. Explore comprehensive video lectures, study materials, and resources designed to enhance your learning experience.',
+            ctaPrimary: content?.hero?.ctaPrimary || '🎬 Browse Videos',
+            ctaSecondary: content?.hero?.ctaSecondary || '📚 Study Materials',
+            image: content?.hero?.image || facultyProfile
         },
         mission: content?.mission || {
             title: 'Our Mission',
@@ -104,7 +105,7 @@ const Home = () => {
                         <div className="hero-image-wrapper float">
 
                             <img
-                                src={facultyProfile}
+                                src={displayContent.hero.image}
                                 alt="Faculty Profile"
                             />
                             <div className="hero-image-decoration"></div>

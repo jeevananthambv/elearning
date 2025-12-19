@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Admin.css';
-import { authAPI, videosAPI, materialsAPI, contactAPI, statsAPI, profileAPI, contentAPI, getToken } from '../api';
+import { authAPI, videosAPI, materialsAPI, contactAPI, statsAPI, profileAPI, contentAPI, getToken, uploadImage } from '../api';
 
 const Admin = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -40,12 +40,17 @@ const Admin = () => {
     });
 
     const [contentForm, setContentForm] = useState({
-        hero: { badge: '', titleStart: '', titleEnd: '', subtitle: '', description: '', ctaPrimary: '', ctaSecondary: '' },
+        hero: { badge: '', titleStart: '', titleEnd: '', subtitle: '', description: '', ctaPrimary: '', ctaSecondary: '', image: '', imageStoragePath: '' },
         mission: { title: '', text: '' },
         features: [],
         branding: { title: '', icon: '' }
     });
     const [formMessage, setFormMessage] = useState({ type: '', text: '' });
+
+    // Image upload states
+    const [heroImageFile, setHeroImageFile] = useState(null);
+    const [profileImageFile, setProfileImageFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
     // Check if already logged in
     useEffect(() => {
@@ -258,31 +263,74 @@ const Admin = () => {
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
         setFormMessage({ type: '', text: '' });
+        setUploading(true);
 
         try {
-            const response = await profileAPI.update(profileForm);
+            let updatedProfile = { ...profileForm };
+
+            // Handle profile image upload if a new file is selected
+            if (profileImageFile) {
+                const uploadResult = await uploadImage(profileImageFile, 'profile-images');
+                if (uploadResult.success) {
+                    updatedProfile.image = uploadResult.url;
+                    updatedProfile.imageStoragePath = uploadResult.storagePath;
+                } else {
+                    throw new Error('Failed to upload profile image');
+                }
+            }
+
+            const response = await profileAPI.update(updatedProfile);
             if (response.success) {
                 setFormMessage({ type: 'success', text: 'Profile updated successfully!' });
                 setProfile(response.data);
+                setProfileImageFile(null);
+                // Clear file input
+                const fileInput = document.getElementById('profile-image-file');
+                if (fileInput) fileInput.value = '';
                 fetchDashboardData();
             }
         } catch (err) {
             setFormMessage({ type: 'error', text: err.message || 'Failed to update profile' });
+        } finally {
+            setUploading(false);
         }
     };
 
     const handleContentUpdate = async (e) => {
         e.preventDefault();
         setFormMessage({ type: '', text: '' });
+        setUploading(true);
 
         try {
-            const response = await contentAPI.update(contentForm);
+            let updatedContent = { ...contentForm };
+
+            // Handle hero image upload if a new file is selected
+            if (heroImageFile) {
+                const uploadResult = await uploadImage(heroImageFile, 'hero-images');
+                if (uploadResult.success) {
+                    updatedContent.hero = {
+                        ...updatedContent.hero,
+                        image: uploadResult.url,
+                        imageStoragePath: uploadResult.storagePath
+                    };
+                } else {
+                    throw new Error('Failed to upload hero image');
+                }
+            }
+
+            const response = await contentAPI.update(updatedContent);
             if (response.success) {
                 setFormMessage({ type: 'success', text: 'Site content updated successfully!' });
+                setHeroImageFile(null);
+                // Clear file input
+                const fileInput = document.getElementById('hero-image-file');
+                if (fileInput) fileInput.value = '';
                 fetchDashboardData();
             }
         } catch (err) {
             setFormMessage({ type: 'error', text: err.message || 'Failed to update content' });
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -536,12 +584,33 @@ const Admin = () => {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Profile Image URL</label>
+                                    <label>Profile Image</label>
                                     <input
-                                        type="text"
-                                        value={profileForm.image}
-                                        onChange={(e) => setProfileForm({ ...profileForm, image: e.target.value })}
+                                        type="file"
+                                        id="profile-image-file"
+                                        accept="image/*"
+                                        onChange={(e) => setProfileImageFile(e.target.files[0])}
                                     />
+                                    {profileImageFile && (
+                                        <div className="image-preview" style={{ marginTop: '1rem' }}>
+                                            <p>New image selected: {profileImageFile.name}</p>
+                                            <img
+                                                src={URL.createObjectURL(profileImageFile)}
+                                                alt="Preview"
+                                                style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '8px', marginTop: '0.5rem' }}
+                                            />
+                                        </div>
+                                    )}
+                                    {profileForm.image && !profileImageFile && (
+                                        <div className="current-image" style={{ marginTop: '1rem' }}>
+                                            <p>Current profile image:</p>
+                                            <img
+                                                src={profileForm.image}
+                                                alt="Current profile"
+                                                style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '8px', marginTop: '0.5rem' }}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 <h4 className="form-section-title">Social Links</h4>
@@ -1126,6 +1195,37 @@ const Admin = () => {
                                                 })}
                                             />
                                         </div>
+                                    </div>
+
+                                    <div className="form-section-title">Hero Image</div>
+                                    <div className="form-group">
+                                        <label>Upload Hero Image (shown on home page)</label>
+                                        <input
+                                            type="file"
+                                            id="hero-image-file"
+                                            accept="image/*"
+                                            onChange={(e) => setHeroImageFile(e.target.files[0])}
+                                        />
+                                        {heroImageFile && (
+                                            <div className="image-preview" style={{ marginTop: '1rem' }}>
+                                                <p>New image selected: {heroImageFile.name}</p>
+                                                <img
+                                                    src={URL.createObjectURL(heroImageFile)}
+                                                    alt="Preview"
+                                                    style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', marginTop: '0.5rem' }}
+                                                />
+                                            </div>
+                                        )}
+                                        {contentForm.hero?.image && !heroImageFile && (
+                                            <div className="current-image" style={{ marginTop: '1rem' }}>
+                                                <p>Current hero image:</p>
+                                                <img
+                                                    src={contentForm.hero.image}
+                                                    alt="Current hero"
+                                                    style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', marginTop: '0.5rem' }}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="form-section-title">Mission Section</div>

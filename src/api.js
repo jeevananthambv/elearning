@@ -32,6 +32,37 @@ export const getToken = () => localStorage.getItem('adminToken');
 export const setToken = (token) => localStorage.setItem('adminToken', token);
 export const removeToken = () => localStorage.removeItem('adminToken');
 
+// Image Upload Helper - Upload images to Firebase Storage
+export const uploadImage = async (file, folder = 'images') => {
+    try {
+        const fileName = `${Date.now()}-${file.name}`;
+        const storageRef = ref(storage, `${folder}/${fileName}`);
+        const uploadResult = await uploadBytes(storageRef, file);
+        const downloadUrl = await getDownloadURL(uploadResult.ref);
+        return {
+            success: true,
+            url: downloadUrl,
+            storagePath: uploadResult.ref.fullPath
+        };
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        return { success: false, message: error.message };
+    }
+};
+
+// Image Delete Helper - Delete image from Firebase Storage
+export const deleteImage = async (storagePath) => {
+    try {
+        if (!storagePath) return { success: true };
+        const storageRef = ref(storage, storagePath);
+        await deleteObject(storageRef);
+        return { success: true };
+    } catch (error) {
+        console.warn('Could not delete image:', error);
+        return { success: false, message: error.message };
+    }
+};
+
 // Auth API - Using Firebase Authentication
 export const authAPI = {
     login: async (email, password) => {
