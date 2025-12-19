@@ -33,7 +33,6 @@ const Navbar = () => {
     fetchBranding();
   }, []);
 
-
   const toggleTheme = () => setIsDark(!isDark);
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
@@ -55,6 +54,38 @@ const Navbar = () => {
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact' },
   ];
+
+  // Mobile menu inline styles for guaranteed visibility
+  const mobileMenuStyle = isOpen ? {
+    display: 'flex',
+    position: 'fixed',
+    top: '55px',
+    left: '0',
+    right: '0',
+    bottom: '0',
+    flexDirection: 'column',
+    background: isDark ? '#1a1a1a' : '#ffffff',
+    zIndex: '99999',
+    padding: '0',
+    gap: '0',
+    overflowY: 'auto',
+    listStyle: 'none',
+  } : {};
+
+  const mobileItemStyle = isOpen ? {
+    width: '100%',
+    textAlign: 'center',
+    borderBottom: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e5e7eb',
+  } : {};
+
+  const mobileLinkStyle = isOpen ? {
+    display: 'block',
+    padding: '18px 20px',
+    fontSize: '1.1rem',
+    fontWeight: '500',
+    color: isDark ? '#ffffff' : '#1a1a1a',
+    textDecoration: 'none',
+  } : {};
 
   return (
     <nav className="navbar">
@@ -121,20 +152,26 @@ const Navbar = () => {
           </form>
         )}
 
-        <ul className={`navbar-menu ${isOpen ? 'active' : ''}`}>
+        <ul className={`navbar-menu ${isOpen ? 'active' : ''}`} style={mobileMenuStyle}>
           {navLinks.map((link) => (
-            <li key={link.path} className="navbar-item">
+            <li key={link.path} className="navbar-item" style={mobileItemStyle}>
               <NavLink
                 to={link.path}
                 className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}
                 onClick={closeMenu}
+                style={mobileLinkStyle}
               >
                 {link.label}
               </NavLink>
             </li>
           ))}
-          <li className="navbar-item navbar-item-cta">
-            <Link to="/admin" className="btn btn-accent" onClick={closeMenu}>
+          <li className="navbar-item navbar-item-cta" style={mobileItemStyle}>
+            <Link
+              to="/admin"
+              className="btn btn-accent"
+              onClick={closeMenu}
+              style={isOpen ? { width: '90%', margin: '16px auto', display: 'block', textAlign: 'center' } : {}}
+            >
               Admin
             </Link>
           </li>
