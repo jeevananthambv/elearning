@@ -1,5 +1,9 @@
 // API Configuration and Helper Functions
-const API_BASE_URL = 'http://localhost:5000/api';
+// Automatically detect environment and use appropriate API URL
+const API_BASE_URL = import.meta.env.DEV
+    ? 'http://localhost:5000/api'  // Development: use local server
+    : '/api';  // Production: use Vercel serverless functions
+
 
 // Token management
 export const getToken = () => localStorage.getItem('adminToken');
