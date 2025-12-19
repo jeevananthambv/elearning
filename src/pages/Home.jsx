@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { videosAPI, statsAPI, contentAPI } from '../api';
 import './Home.css';
+import facultyProfile from '../assets/faculty-profile.jpg';
 
 const Home = () => {
     const [recentVideos, setRecentVideos] = useState([]);
@@ -103,8 +104,8 @@ const Home = () => {
                         <div className="hero-image-wrapper float">
 
                             <img
-                                src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=500&h=600&fit=crop"
-                                alt="Faculty Teaching"
+                                src={facultyProfile}
+                                alt="Faculty Profile"
                             />
                             <div className="hero-image-decoration"></div>
                         </div>
