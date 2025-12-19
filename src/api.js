@@ -36,6 +36,7 @@ export const removeToken = () => localStorage.removeItem('adminToken');
 export const authAPI = {
     login: async (email, password) => {
         try {
+            // Try to sign in first
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const token = await userCredential.user.getIdToken();
             setToken(token);
@@ -51,8 +52,41 @@ export const authAPI = {
                 }
             };
         } catch (error) {
+            // If user doesn't exist and using default admin credentials, auto-create
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+                // Check if using default admin credentials
+                if (email === 'admin@university.edu' && password === 'admin123') {
+                    try {
+                        // Create the admin user
+                        const newUser = await createUserWithEmailAndPassword(auth, email, password);
+                        const token = await newUser.user.getIdToken();
+                        setToken(token);
+                        return {
+                            success: true,
+                            data: {
+                                token,
+                                user: {
+                                    id: newUser.user.uid,
+                                    name: 'Admin',
+                                    email: newUser.user.email
+                                }
+                            }
+                        };
+                    } catch (createError) {
+                        console.error('Create user error:', createError);
+                        return { success: false, message: 'Failed to setup admin account. Please try again.' };
+                    }
+                }
+            }
             console.error('Login error:', error);
-            return { success: false, message: error.message };
+            // Provide user-friendly error messages
+            let message = 'Invalid email or password';
+            if (error.code === 'auth/too-many-requests') {
+                message = 'Too many failed attempts. Please try again later.';
+            } else if (error.code === 'auth/network-request-failed') {
+                message = 'Network error. Please check your connection.';
+            }
+            return { success: false, message };
         }
     },
 

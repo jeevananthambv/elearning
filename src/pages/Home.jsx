@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { videosAPI, statsAPI } from '../api';
+import { videosAPI, statsAPI, contentAPI } from '../api';
 import './Home.css';
 
 const Home = () => {
@@ -15,18 +15,10 @@ const Home = () => {
 
     const fetchData = async () => {
         try {
-            // Check for content API availability (graceful degradation)
-            let contentData = null;
-            try {
-                const contentRes = await fetch('http://localhost:5000/api/content').then(res => res.json());
-                if (contentRes.success) contentData = contentRes.data;
-            } catch (_e) {
-                console.warn('Content API not available');
-            }
-
-            const [videosRes, statsRes] = await Promise.all([
+            const [videosRes, statsRes, contentRes] = await Promise.all([
                 videosAPI.getAll(),
-                statsAPI.getPublic()
+                statsAPI.getPublic(),
+                contentAPI.get()
             ]);
 
             if (videosRes.success) {
@@ -35,8 +27,8 @@ const Home = () => {
             if (statsRes.success) {
                 setStats(statsRes.data);
             }
-            if (contentData) {
-                setContent(contentData);
+            if (contentRes.success && contentRes.data) {
+                setContent(contentRes.data);
             }
         } catch (error) {
             console.error('Error fetching data:', error);

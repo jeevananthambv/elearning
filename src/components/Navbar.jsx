@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { contentAPI } from '../api';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -21,16 +22,17 @@ const Navbar = () => {
   useEffect(() => {
     const fetchBranding = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/content').then(r => r.json());
-        if (res.success && res.data.branding) {
-          setSiteTitle(res.data.branding.title || 'E-Content');
+        const res = await contentAPI.get();
+        if (res.success && res.data?.branding?.title) {
+          setSiteTitle(res.data.branding.title);
         }
       } catch (e) {
-        console.error(e);
+        console.error('Branding fetch error:', e);
       }
     };
     fetchBranding();
   }, []);
+
 
   const toggleTheme = () => setIsDark(!isDark);
   const toggleMenu = () => setIsOpen(!isOpen);
