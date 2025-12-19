@@ -148,15 +148,16 @@ const Navbar = () => {
           className="mobile-menu-overlay"
           style={{
             position: 'fixed',
-            top: '55px',
+            top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+            backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
             zIndex: 99999,
             display: 'flex',
             flexDirection: 'column',
             overflowY: 'auto',
+            paddingTop: '70px',
           }}
         >
           {navLinks.map((link) => (
