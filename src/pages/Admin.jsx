@@ -417,7 +417,7 @@ const Admin = () => {
                 <div className="container">
                     <div className="admin-header-content">
                         <div>
-                            <h1>Admin Dashboard</h1>
+                            <h1>Admin Dashboard <span style={{ fontSize: '0.5em', background: '#333', color: '#fff', padding: '2px 6px', borderRadius: '4px', verticalAlign: 'middle' }}>v1.1</span></h1>
                             <p>Manage your videos, materials, and messages</p>
                         </div>
                         <button onClick={handleLogout} className="btn btn-outline logout-btn">
