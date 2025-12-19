@@ -22,7 +22,7 @@ const Admin = () => {
     const [editingMaterial, setEditingMaterial] = useState(null);
 
     const [videoForm, setVideoForm] = useState({
-        title: '', subject: '', description: '', youtubeId: '', thumbnail: '', duration: ''
+        title: '', subject: '', description: '', youtubeId: '', thumbnail: '', thumbnailStoragePath: '', duration: ''
     });
     const [materialForm, setMaterialForm] = useState({
         title: '', category: '', file: null
@@ -50,6 +50,7 @@ const Admin = () => {
     // Image upload states
     const [heroImageFile, setHeroImageFile] = useState(null);
     const [profileImageFile, setProfileImageFile] = useState(null);
+    const [videoThumbnailFile, setVideoThumbnailFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
     // Check if already logged in
@@ -127,24 +128,44 @@ const Admin = () => {
     const handleVideoSubmit = async (e) => {
         e.preventDefault();
         setFormMessage({ type: '', text: '' });
+        setUploading(true);
 
         try {
+            let updatedVideo = { ...videoForm };
+
+            // Handle thumbnail upload if a new file is selected
+            if (videoThumbnailFile) {
+                const uploadResult = await uploadImage(videoThumbnailFile, 'video-thumbnails');
+                if (uploadResult.success) {
+                    updatedVideo.thumbnail = uploadResult.url;
+                    updatedVideo.thumbnailStoragePath = uploadResult.storagePath;
+                } else {
+                    throw new Error('Failed to upload thumbnail');
+                }
+            }
+
             let response;
             if (editingVideo) {
-                response = await videosAPI.update(editingVideo.id || editingVideo._id, videoForm);
+                response = await videosAPI.update(editingVideo.id || editingVideo._id, updatedVideo);
             } else {
-                response = await videosAPI.create(videoForm);
+                response = await videosAPI.create(updatedVideo);
             }
 
             if (response.success) {
                 setFormMessage({ type: 'success', text: editingVideo ? 'Video updated successfully!' : 'Video added successfully!' });
-                setVideoForm({ title: '', subject: '', description: '', youtubeId: '', thumbnail: '', duration: '' });
+                setVideoForm({ title: '', subject: '', description: '', youtubeId: '', thumbnail: '', thumbnailStoragePath: '', duration: '' });
+                setVideoThumbnailFile(null);
+                // Clear file input
+                const fileInput = document.getElementById('video-thumbnail-file');
+                if (fileInput) fileInput.value = '';
                 setEditingVideo(null);
                 fetchDashboardData();
             }
         } catch (err) {
             setFormMessage({ type: 'error', text: err.message || 'Failed to save video' });
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -156,6 +177,7 @@ const Admin = () => {
             description: video.description || '',
             youtubeId: video.youtubeId,
             thumbnail: video.thumbnail || '',
+            thumbnailStoragePath: video.thumbnailStoragePath || '',
             duration: video.duration || ''
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -163,7 +185,8 @@ const Admin = () => {
 
     const handleCancelVideoEdit = () => {
         setEditingVideo(null);
-        setVideoForm({ title: '', subject: '', description: '', youtubeId: '', thumbnail: '', duration: '' });
+        setVideoForm({ title: '', subject: '', description: '', youtubeId: '', thumbnail: '', thumbnailStoragePath: '', duration: '' });
+        setVideoThumbnailFile(null);
     };
 
     const handleMaterialSubmit = async (e) => {
@@ -940,6 +963,36 @@ const Admin = () => {
                                                 onChange={(e) => setVideoForm({ ...videoForm, duration: e.target.value })}
                                             />
                                         </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Video Thumbnail (Optional)</label>
+                                        <input
+                                            type="file"
+                                            id="video-thumbnail-file"
+                                            accept="image/*"
+                                            onChange={(e) => setVideoThumbnailFile(e.target.files[0])}
+                                            style={{ minHeight: '50px', display: 'flex', alignItems: 'center' }}
+                                        />
+                                        {videoThumbnailFile && (
+                                            <div className="image-preview" style={{ marginTop: '1rem' }}>
+                                                <p>New thumbnail selected: {videoThumbnailFile.name}</p>
+                                                <img
+                                                    src={URL.createObjectURL(videoThumbnailFile)}
+                                                    alt="Preview"
+                                                    style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', marginTop: '0.5rem' }}
+                                                />
+                                            </div>
+                                        )}
+                                        {videoForm.thumbnail && !videoThumbnailFile && (
+                                            <div className="current-image" style={{ marginTop: '1rem' }}>
+                                                <p>Current thumbnail:</p>
+                                                <img
+                                                    src={videoForm.thumbnail}
+                                                    alt="Current thumbnail"
+                                                    style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', marginTop: '0.5rem' }}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="upload-actions">
                                         <button type="submit" className="btn btn-primary">
