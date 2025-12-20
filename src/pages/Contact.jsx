@@ -48,7 +48,16 @@ const Contact = () => {
             }
         } catch (err) {
             console.error('Error submitting form:', err);
-            setError(err.message || 'Failed to send message. Please try again.');
+            let errorMessage = 'Failed to send message. Please try again.';
+
+            // Check for specific Firebase errors
+            if (err.code === 'permission-denied') {
+                errorMessage = 'Permission Error: The system is blocking this message. This usually means Firestore Security Rules need to be updated to allow public writes to the "contacts" collection.';
+            } else if (err.message) {
+                errorMessage = `Error: ${err.message}`;
+            }
+
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
