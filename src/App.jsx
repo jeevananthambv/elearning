@@ -9,9 +9,6 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
 import Search from './pages/Search';
-import './index.css';
-
-import SystemStatus from './components/SystemStatus';
 
 function App() {
   return (
@@ -31,7 +28,6 @@ function App() {
         </main>
         <Footer />
         <Chatbot />
-        <SystemStatus />
       </div>
     </Router>
   );
