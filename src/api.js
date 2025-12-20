@@ -555,43 +555,74 @@ export const profileAPI = {
             const docRef = doc(db, 'settings', 'profile');
             const docSnap = await getDoc(docRef);
 
+            const defaultProfile = {
+                name: 'Madhankumar C',
+                title: 'Assistant Professor',
+                department: 'Computer Science & Engineering',
+                email: 'madhankumar@university.edu',
+                phone: '+91 7904863245',
+                about: 'I am a passionate educator with over 10 years of experience in teaching Computer Science. My focus is on making complex concepts accessible to every student through innovative e-learning methods.',
+                image: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop',
+                academicBackground: [
+                    { year: '2023', role: 'Ph.D. in Computer Science', institution: 'Anna University, Chennai' },
+                    { year: '2015', role: 'M.E. Computer Science', institution: 'Anna University, Chennai' },
+                    { year: '2013', role: 'B.E. Computer Science', institution: 'Anna University, Chennai' }
+                ],
+                teachingInterests: [
+                    { title: 'Data Structures', description: 'Exploring efficient ways to store and organize data.', icon: 'mh' },
+                    { title: 'Web Development', description: 'Building modern, responsive, and dynamic applications.', icon: '💻' },
+                    { title: 'Database Management', description: 'Designing robust and scalable database systems.', icon: '🗄️' },
+                    { title: 'Artificial Intelligence', description: 'Understanding the fundamentals of AI and Machine Learning.', icon: '🤖' }
+                ],
+                contributionTitle: 'Contributions to E-Content Development',
+                contributionText: 'As an advocate for digital education, I have been actively involved in developing e-learning resources that cater to diverse learning styles. My contributions include comprehensive video lectures, detailed study materials, and practical lab manuals.',
+                contributionStats: {
+                    lectures: '50+',
+                    materials: '100+',
+                    students: '1000+',
+                    subjects: '5+'
+                },
+                identifiers: {
+                    orcid: '0009-0005-1880-903X',
+                    researcherId: 'MGA-7650-2025',
+                    scopus: '7271159',
+                    elsevier: '7271159',
+                    googleScholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
+                    ieee: '101053152',
+                    acm: '9279391',
+                    patent: '7904863245',
+                    employee: 'RTC05474',
+                    vidwan: '606753',
+                    researchGate: 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview',
+                    semanticScholar: 'https://www.semanticscholar.org/me/recommendations?folderIds=12537472',
+                    academia: 'https://independent.academia.edu/MathankumarC2',
+                    github: 'https://github.com/Mathan-2003',
+                    linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/'
+                },
+                social: {
+                    linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/',
+                    scholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
+                    researchgate: 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview'
+                }
+            };
+
             if (docSnap.exists()) {
-                return { success: true, data: docSnap.data() };
+                const fetchedData = docSnap.data();
+                return {
+                    success: true,
+                    data: {
+                        ...defaultProfile,
+                        ...fetchedData,
+                        identifiers: { ...defaultProfile.identifiers, ...(fetchedData.identifiers || {}) },
+                        social: { ...defaultProfile.social, ...(fetchedData.social || {}) },
+                        contributionStats: { ...defaultProfile.contributionStats, ...(fetchedData.contributionStats || {}) }
+                    }
+                };
             }
 
-            // Return default profile if not exists
             return {
                 success: true,
-                data: {
-                    name: 'Madhankumar C',
-                    title: 'Assistant Professor',
-                    department: 'Computer Science & Engineering',
-                    email: 'madhankumar@university.edu',
-                    phone: '+91 7904863245',
-                    about: 'Welcome to my e-content portal.',
-                    identifiers: {
-                        orcid: '0009-0005-1880-903X',
-                        researcherId: 'MGA-7650-2025',
-                        scopus: '7271159',
-                        elsevier: '7271159',
-                        googleScholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
-                        ieee: '101053152',
-                        acm: '9279391',
-                        patent: '7904863245',
-                        employee: 'RTC05474',
-                        vidwan: '606753',
-                        researchGate: 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview',
-                        semanticScholar: 'https://www.semanticscholar.org/me/recommendations?folderIds=12537472',
-                        academia: 'https://independent.academia.edu/MathankumarC2',
-                        github: 'https://github.com/Mathan-2003',
-                        linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/'
-                    },
-                    social: {
-                        linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/',
-                        scholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
-                        researchgate: 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview'
-                    }
-                }
+                data: defaultProfile
             };
         } catch (error) {
             return { success: false, message: error.message };
