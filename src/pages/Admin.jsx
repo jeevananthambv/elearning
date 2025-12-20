@@ -34,6 +34,7 @@ const Admin = () => {
         academicBackground: [],
         teachingInterests: [],
         social: { linkedin: '', scholar: '', researchgate: '' },
+        identifiers: { orcid: '', researcherId: '', scopus: '', elsevier: '', googleScholar: '', ieee: '', acm: '', patent: '', employee: '', vidwan: '', researchGate: '', semanticScholar: '', academia: '', github: '', linkedin: '' },
         contributionTitle: '',
         contributionText: '',
         contributionStats: { lectures: '', materials: '', students: '', subjects: '' }
@@ -682,6 +683,188 @@ const Admin = () => {
                                         value={profileForm.about}
                                         onChange={(e) => setProfileForm({ ...profileForm, about: e.target.value })}
                                     ></textarea>
+                                </div>
+
+                                <h4 className="form-section-title">Academic Identifiers</h4>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>ORCID iD</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.orcid || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, orcid: e.target.value }
+                                            })}
+                                            placeholder="0000-0000-..."
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>ResearcherID (Web of Science)</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.researcherId || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, researcherId: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Scopus ID</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.scopus || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, scopus: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Elsevier ID</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.elsevier || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, elsevier: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Google Scholar URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.googleScholar || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, googleScholar: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>VIDWAN ID</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.vidwan || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, vidwan: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>IEEE Membership ID</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.ieee || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, ieee: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>ACM Membership ID</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.acm || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, acm: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Patent ID</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.patent || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, patent: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Employee ID</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.employee || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, employee: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>GitHub URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.github || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, github: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>LinkedIn URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.linkedin || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, linkedin: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>ResearchGate URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.researchGate || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, researchGate: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Semantic Scholar URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.semanticScholar || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, semanticScholar: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Academia.edu URL</label>
+                                    <input
+                                        type="text"
+                                        value={profileForm.identifiers?.academia || ''}
+                                        onChange={(e) => setProfileForm({
+                                            ...profileForm,
+                                            identifiers: { ...profileForm.identifiers, academia: e.target.value }
+                                        })}
+                                    />
                                 </div>
 
                                 <h4 className="form-section-title">E-Content Contributions</h4>

@@ -90,6 +90,107 @@ const About = () => {
                 </div>
             </section>
 
+            {/* Researcher Profile Section */}
+            {displayProfile.identifiers && Object.values(displayProfile.identifiers).some(val => val) && (
+                <section className="section researcher-section">
+                    <div className="container">
+                        <h2 className="section-title">Researcher Profile & Identifiers</h2>
+                        <div className="identifiers-grid">
+                            {displayProfile.identifiers.orcid && (
+                                <a href={`https://orcid.org/${displayProfile.identifiers.orcid}`} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">ORCID iD</span>
+                                    <span className="id-value">{displayProfile.identifiers.orcid}</span>
+                                </a>
+                            )}
+                            {displayProfile.identifiers.researcherId && (
+                                <div className="identifier-card">
+                                    <span className="id-label">Web of Science ResearcherID</span>
+                                    <span className="id-value">{displayProfile.identifiers.researcherId}</span>
+                                </div>
+                            )}
+                            {displayProfile.identifiers.scopus && (
+                                <div className="identifier-card">
+                                    <span className="id-label">Scopus Author ID</span>
+                                    <span className="id-value">{displayProfile.identifiers.scopus}</span>
+                                </div>
+                            )}
+                            {displayProfile.identifiers.elsevier && (
+                                <div className="identifier-card">
+                                    <span className="id-label">Elsevier Author ID</span>
+                                    <span className="id-value">{displayProfile.identifiers.elsevier}</span>
+                                </div>
+                            )}
+                            {displayProfile.identifiers.googleScholar && (
+                                <a href={displayProfile.identifiers.googleScholar} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">Google Scholar</span>
+                                    <span className="id-value">View Profile ↗</span>
+                                </a>
+                            )}
+                            {displayProfile.identifiers.vidwan && (
+                                <a href={`https://vidwan.inflibnet.ac.in/profile/${displayProfile.identifiers.vidwan}`} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">VIDWAN / IRINS</span>
+                                    <span className="id-value">{displayProfile.identifiers.vidwan}</span>
+                                </a>
+                            )}
+                            {displayProfile.identifiers.ieee && (
+                                <div className="identifier-card">
+                                    <span className="id-label">IEEE Membership ID</span>
+                                    <span className="id-value">{displayProfile.identifiers.ieee}</span>
+                                </div>
+                            )}
+                            {displayProfile.identifiers.acm && (
+                                <div className="identifier-card">
+                                    <span className="id-label">ACM Membership ID</span>
+                                    <span className="id-value">{displayProfile.identifiers.acm}</span>
+                                </div>
+                            )}
+                            {displayProfile.identifiers.patent && (
+                                <div className="identifier-card">
+                                    <span className="id-label">Patent ID</span>
+                                    <span className="id-value">{displayProfile.identifiers.patent}</span>
+                                </div>
+                            )}
+                            {displayProfile.identifiers.employee && (
+                                <div className="identifier-card">
+                                    <span className="id-label">Employee ID</span>
+                                    <span className="id-value">{displayProfile.identifiers.employee}</span>
+                                </div>
+                            )}
+                            {displayProfile.identifiers.researchGate && (
+                                <a href={displayProfile.identifiers.researchGate} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">ResearchGate</span>
+                                    <span className="id-value">View Profile ↗</span>
+                                </a>
+                            )}
+                            {displayProfile.identifiers.semanticScholar && (
+                                <a href={displayProfile.identifiers.semanticScholar} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">Semantic Scholar</span>
+                                    <span className="id-value">View Profile ↗</span>
+                                </a>
+                            )}
+                            {displayProfile.identifiers.academia && (
+                                <a href={displayProfile.identifiers.academia} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">Academia.edu</span>
+                                    <span className="id-value">View Profile ↗</span>
+                                </a>
+                            )}
+                            {displayProfile.identifiers.github && (
+                                <a href={displayProfile.identifiers.github} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">GitHub</span>
+                                    <span className="id-value">View Profile ↗</span>
+                                </a>
+                            )}
+                            {displayProfile.identifiers.linkedin && (
+                                <a href={displayProfile.identifiers.linkedin} target="_blank" rel="noopener noreferrer" className="identifier-card">
+                                    <span className="id-label">LinkedIn</span>
+                                    <span className="id-value">View Profile ↗</span>
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* Background Section */}
             <section className="section background-section">
                 <div className="container">

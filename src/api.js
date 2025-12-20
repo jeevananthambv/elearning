@@ -568,7 +568,29 @@ export const profileAPI = {
                     department: 'Computer Science & Engineering',
                     email: 'madhankumar@university.edu',
                     phone: '+91 7904863245',
-                    about: 'Welcome to my e-content portal.'
+                    about: 'Welcome to my e-content portal.',
+                    identifiers: {
+                        orcid: '0009-0005-1880-903X',
+                        researcherId: 'MGA-7650-2025',
+                        scopus: '7271159',
+                        elsevier: '7271159',
+                        googleScholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
+                        ieee: '101053152',
+                        acm: '9279391',
+                        patent: '7904863245',
+                        employee: 'RTC05474',
+                        vidwan: '606753',
+                        researchGate: 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview',
+                        semanticScholar: 'https://www.semanticscholar.org/me/recommendations?folderIds=12537472',
+                        academia: 'https://independent.academia.edu/MathankumarC2',
+                        github: 'https://github.com/Mathan-2003',
+                        linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/'
+                    },
+                    social: {
+                        linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/',
+                        scholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
+                        researchgate: 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview'
+                    }
                 }
             };
         } catch (error) {

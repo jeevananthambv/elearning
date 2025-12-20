@@ -196,17 +196,17 @@ const Contact = () => {
                             <div className="social-card card">
                                 <h3>Connect on Social Media</h3>
                                 <div className="social-buttons">
-                                    <a href="#" className="social-button youtube">
+                                    <a href={info.identifiers?.youtube || '#'} target="_blank" rel="noopener noreferrer" className="social-button youtube">
                                         <span>▶</span> YouTube Channel
                                     </a>
-                                    <a href="#" className="social-button linkedin">
+                                    <a href={info.identifiers?.linkedin || '#'} target="_blank" rel="noopener noreferrer" className="social-button linkedin">
                                         <span>in</span> LinkedIn Profile
                                     </a>
-                                    <a href="#" className="social-button scholar">
+                                    <a href={info.identifiers?.googleScholar || '#'} target="_blank" rel="noopener noreferrer" className="social-button scholar">
                                         <span>📚</span> Google Scholar
                                     </a>
-                                    <a href="#" className="social-button twitter">
-                                        <span>𝕏</span> Twitter / X
+                                    <a href={info.identifiers?.github || '#'} target="_blank" rel="noopener noreferrer" className="social-button twitter" style={{ background: '#333' }}>
+                                        <span>💻</span> GitHub Profile
                                     </a>
                                 </div>
                             </div>

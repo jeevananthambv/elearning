@@ -285,69 +285,9 @@
 
     .navbar-menu {
         display: none;
-        position: fixed;
-        top: 55px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: stretch;
-        gap: 0;
-        padding: 0;
-        background: #1a1a1a;
-        z-index: 9999;
-        overflow-y: auto;
     }
 
-    .navbar-menu.active {
-        display: flex;
-    }
 
-    [data-theme="light"] .navbar-menu {
-        background: #ffffff;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar-item {
-        width: 100%;
-        text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    [data-theme="light"] .navbar-item {
-        border-bottom-color: #e5e7eb;
-    }
-
-    .navbar-link {
-        display: block;
-        padding: 16px 20px;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #ffffff;
-    }
-
-    [data-theme="light"] .navbar-link {
-        color: #1a1a1a;
-    }
-
-    .navbar-link:hover,
-    .navbar-link.active {
-        color: #c9a962;
-        background: rgba(201, 169, 98, 0.15);
-    }
-
-    .navbar-item-cta {
-        padding: 16px;
-        border-bottom: none;
-    }
-
-    .navbar-item-cta .btn {
-        width: 100%;
-        padding: 14px 20px;
-        font-size: 1rem;
-        justify-content: center;
-    }
 }
 
 /* Tablets and iPad (768px - 992px) */
