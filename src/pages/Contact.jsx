@@ -221,7 +221,7 @@ const Contact = () => {
                                 <h3>Connect on Social Media</h3>
                                 <div className="social-buttons">
                                     <a
-                                        href={getValidUrl(info.identifiers?.youtube, 'https://www.youtube.com/@madhankumarc')}
+                                        href="https://www.youtube.com/@madhankumarc"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="social-button youtube"
@@ -229,7 +229,7 @@ const Contact = () => {
                                         <span>▶</span> YouTube Channel
                                     </a>
                                     <a
-                                        href={getValidUrl(info.identifiers?.linkedin, 'https://www.linkedin.com/in/madhan-kumar-637231248/')}
+                                        href="https://www.linkedin.com/in/madhan-kumar-637231248/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="social-button linkedin"
@@ -237,7 +237,7 @@ const Contact = () => {
                                         <span>in</span> LinkedIn Profile
                                     </a>
                                     <a
-                                        href={getValidUrl(info.identifiers?.googleScholar, 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ')}
+                                        href="https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="social-button scholar"
@@ -245,7 +245,7 @@ const Contact = () => {
                                         <span>📚</span> Google Scholar
                                     </a>
                                     <a
-                                        href={getValidUrl(info.identifiers?.github, 'https://github.com/Mathan-2003')}
+                                        href="https://github.com/Mathan-2003"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="social-button twitter"
