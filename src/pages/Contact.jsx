@@ -211,16 +211,16 @@ const Contact = () => {
                             <div className="social-card card">
                                 <h3>Connect on Social Media</h3>
                                 <div className="social-buttons">
-                                    <a href={info.identifiers?.youtube || '#'} target="_blank" rel="noopener noreferrer" className="social-button youtube">
+                                    <a href={info.identifiers?.youtube || 'https://www.youtube.com/@madhankumarc'} target="_blank" rel="noopener noreferrer" className="social-button youtube">
                                         <span>▶</span> YouTube Channel
                                     </a>
-                                    <a href={info.identifiers?.linkedin || '#'} target="_blank" rel="noopener noreferrer" className="social-button linkedin">
+                                    <a href={info.identifiers?.linkedin || 'https://www.linkedin.com/in/madhan-kumar-637231248/'} target="_blank" rel="noopener noreferrer" className="social-button linkedin">
                                         <span>in</span> LinkedIn Profile
                                     </a>
-                                    <a href={info.identifiers?.googleScholar || '#'} target="_blank" rel="noopener noreferrer" className="social-button scholar">
+                                    <a href={info.identifiers?.googleScholar || 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ'} target="_blank" rel="noopener noreferrer" className="social-button scholar">
                                         <span>📚</span> Google Scholar
                                     </a>
-                                    <a href={info.identifiers?.github || '#'} target="_blank" rel="noopener noreferrer" className="social-button twitter" style={{ background: '#333' }}>
+                                    <a href={info.identifiers?.github || 'https://github.com/Mathan-2003'} target="_blank" rel="noopener noreferrer" className="social-button twitter" style={{ background: '#333' }}>
                                         <span>💻</span> GitHub Profile
                                     </a>
                                 </div>

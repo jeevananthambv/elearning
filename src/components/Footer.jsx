@@ -68,21 +68,15 @@ const Footer = () => {
                     <div className="footer-section footer-social">
                         <h4 className="footer-heading">Follow Us</h4>
                         <div className="social-links">
-                            {contactInfo.social?.linkedin && (
-                                <a href={contactInfo.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="social-link">
-                                    <span>in</span>
-                                </a>
-                            )}
-                            {contactInfo.social?.scholar && (
-                                <a href={contactInfo.social.scholar} target="_blank" rel="noopener noreferrer" aria-label="Google Scholar" className="social-link">
-                                    <span>🎓</span>
-                                </a>
-                            )}
-                            {contactInfo.social?.researchgate && (
-                                <a href={contactInfo.social.researchgate} target="_blank" rel="noopener noreferrer" aria-label="ResearchGate" className="social-link">
-                                    <span>RG</span>
-                                </a>
-                            )}
+                            <a href={contactInfo.social?.linkedin || 'https://www.linkedin.com/in/madhan-kumar-637231248/'} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="social-link">
+                                <span>in</span>
+                            </a>
+                            <a href={contactInfo.social?.scholar || 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ'} target="_blank" rel="noopener noreferrer" aria-label="Google Scholar" className="social-link">
+                                <span>🎓</span>
+                            </a>
+                            <a href={contactInfo.social?.researchgate || 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview'} target="_blank" rel="noopener noreferrer" aria-label="ResearchGate" className="social-link">
+                                <span>RG</span>
+                            </a>
                             <a href={`mailto:${contactInfo.email}`} aria-label="Email" className="social-link">
                                 <span>✉</span>
                             </a>
