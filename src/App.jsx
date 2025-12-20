@@ -11,6 +11,8 @@ import Admin from './pages/Admin';
 import Search from './pages/Search';
 import './index.css';
 
+import SystemStatus from './components/SystemStatus';
+
 function App() {
   return (
     <Router>
@@ -29,6 +31,7 @@ function App() {
         </main>
         <Footer />
         <Chatbot />
+        <SystemStatus />
       </div>
     </Router>
   );

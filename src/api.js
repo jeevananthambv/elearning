@@ -12,7 +12,8 @@ import {
     where,
     orderBy,
     increment,
-    setDoc
+    setDoc,
+    limit
 } from 'firebase/firestore';
 import {
     signInWithEmailAndPassword,
@@ -668,9 +669,18 @@ export const contentAPI = {
     }
 };
 
-// Health check - Always returns true for Firebase
+// Health check - Verify Firestore connectivity
 export const checkHealth = async () => {
-    return true;
+    try {
+        // Try to fetch one video to verify read access
+        const videosRef = collection(db, 'videos');
+        const q = query(videosRef, orderBy('createdAt', 'desc'), limit(1));
+        await getDocs(q);
+        return { success: true, message: 'Connected to Firestore' };
+    } catch (error) {
+        console.error('Health Check Failed:', error);
+        return { success: false, message: `Connection Failed: ${error.message}` };
+    }
 };
 
 export default {
