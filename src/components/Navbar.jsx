@@ -143,62 +143,28 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Menu Overlay - Rendered outside navbar */}
-      {isOpen && (
-        <div
-          className="mobile-menu-overlay"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
-            zIndex: 99999,
-            display: 'flex',
-            flexDirection: 'column',
-            overflowY: 'auto',
-            paddingTop: '70px',
-          }}
-        >
+      {/* Mobile Menu Overlay - Rendered outside navbar */}
+      <div className={`mobile-menu-overlay ${isOpen ? 'active' : ''}`}>
+        <div className="mobile-menu-content">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
+              className={({ isActive }) => `mobile-menu-link ${isActive ? 'active' : ''}`}
               onClick={closeMenu}
-              style={{
-                display: 'block',
-                padding: '18px 24px',
-                fontSize: '1.2rem',
-                fontWeight: '500',
-                color: isDark ? '#ffffff' : '#1a1a1a',
-                textDecoration: 'none',
-                borderBottom: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e5e7eb',
-                textAlign: 'center',
-              }}
             >
               {link.label}
             </NavLink>
           ))}
           <Link
             to="/admin"
+            className="mobile-menu-link mobile-menu-cta"
             onClick={closeMenu}
-            style={{
-              display: 'block',
-              padding: '18px 24px',
-              margin: '16px 20px',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              color: '#1a1a1a',
-              textDecoration: 'none',
-              textAlign: 'center',
-              backgroundColor: '#c9a962',
-              borderRadius: '8px',
-            }}
           >
             Admin
           </Link>
         </div>
-      )}
+      </div>
     </>
   );
 };

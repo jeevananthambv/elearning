@@ -58,7 +58,13 @@ const Contact = () => {
     const info = contactInfo || {
         email: 'madhankumar.c@university.edu',
         phone: '+91 79048 63245',
-        location: 'Room 301, Computer Science Building, XYZ University Campus'
+        location: 'Room 301, Computer Science Building, XYZ University Campus',
+        identifiers: {
+            linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/',
+            googleScholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
+            github: 'https://github.com/Mathan-2003',
+            youtube: '#'
+        }
     };
 
     return (
