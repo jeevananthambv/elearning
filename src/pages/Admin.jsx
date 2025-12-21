@@ -303,7 +303,10 @@ const Admin = () => {
                 }
             }
 
+            console.log('Updating profile with:', updatedProfile);
             const response = await profileAPI.update(updatedProfile);
+            console.log('Profile update response:', response);
+            
             if (response.success) {
                 setFormMessage({ type: 'success', text: 'Profile updated successfully!' });
                 setProfile(response.data);
@@ -312,9 +315,13 @@ const Admin = () => {
                 const fileInput = document.getElementById('profile-image-file');
                 if (fileInput) fileInput.value = '';
                 fetchDashboardData();
+            } else {
+                throw new Error(response.message || 'Failed to update profile');
             }
         } catch (err) {
-            setFormMessage({ type: 'error', text: err.message || 'Failed to update profile' });
+            console.error('Profile update error:', err);
+            const errorMsg = err.message || 'Failed to update profile';
+            setFormMessage({ type: 'error', text: `Error: ${errorMsg}. Please check console for details.` });
         } finally {
             setUploading(false);
         }
@@ -342,7 +349,10 @@ const Admin = () => {
                 }
             }
 
+            console.log('Updating content with:', updatedContent);
             const response = await contentAPI.update(updatedContent);
+            console.log('Content update response:', response);
+            
             if (response.success) {
                 setFormMessage({ type: 'success', text: 'Site content updated successfully!' });
                 setHeroImageFile(null);
@@ -350,9 +360,13 @@ const Admin = () => {
                 const fileInput = document.getElementById('hero-image-file');
                 if (fileInput) fileInput.value = '';
                 fetchDashboardData();
+            } else {
+                throw new Error(response.message || 'Failed to update content');
             }
         } catch (err) {
-            setFormMessage({ type: 'error', text: err.message || 'Failed to update content' });
+            console.error('Content update error:', err);
+            const errorMsg = err.message || 'Failed to update content';
+            setFormMessage({ type: 'error', text: `Error: ${errorMsg}. Please check console for details.` });
         } finally {
             setUploading(false);
         }
