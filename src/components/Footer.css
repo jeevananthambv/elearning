@@ -82,6 +82,21 @@
     align-items: center;
     gap: var(--spacing-sm);
     font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.footer-nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    pointer-events: auto;
 }
 
 .footer-section ul li a::before {
@@ -118,6 +133,9 @@
     color: var(--color-white);
     font-size: 1.1rem;
     transition: all var(--transition-normal);
+    cursor: pointer;
+    pointer-events: auto;
+    text-decoration: none;
 }
 
 .social-link:hover {

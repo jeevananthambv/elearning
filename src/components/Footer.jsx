@@ -48,11 +48,11 @@ const Footer = () => {
                     <div className="footer-section footer-links">
                         <h4 className="footer-heading">Quick Links</h4>
                         <ul>
-                            <li><Link to="/">Home</Link></li>
-                            <li><Link to="/videos">Videos</Link></li>
-                            <li><Link to="/materials">Study Materials</Link></li>
-                            <li><Link to="/about">About Faculty</Link></li>
-                            <li><Link to="/contact">Contact</Link></li>
+                            <li><Link to="/" className="footer-nav-link">Home</Link></li>
+                            <li><Link to="/videos" className="footer-nav-link">Videos</Link></li>
+                            <li><Link to="/materials" className="footer-nav-link">Study Materials</Link></li>
+                            <li><Link to="/about" className="footer-nav-link">About Faculty</Link></li>
+                            <li><Link to="/contact" className="footer-nav-link">Contact</Link></li>
                         </ul>
                     </div>
 
