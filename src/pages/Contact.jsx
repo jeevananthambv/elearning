@@ -72,7 +72,7 @@ const Contact = () => {
             linkedin: 'https://www.linkedin.com/in/madhan-kumar-637231248/',
             googleScholar: 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ',
             github: 'https://github.com/Mathan-2003',
-            youtube: '#'
+            youtube: 'https://www.youtube.com/@madhankumarc'
         }
     };
 
