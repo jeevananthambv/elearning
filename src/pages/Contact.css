@@ -163,6 +163,10 @@
     color: var(--color-white);
     font-weight: 500;
     transition: all var(--transition-normal);
+    text-decoration: none;
+    cursor: pointer;
+    pointer-events: auto;
+    border: none;
 }
 
 .social-button span {
