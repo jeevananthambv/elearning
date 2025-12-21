@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'iumVSZvEt7rqXpc7Oeh8fgAc';
 
 // Data file path - using /tmp for serverless
 const DATA_FILE = process.env.VERCEL ? '/tmp/data.json' : path.join(__dirname, '../server/data.json');
