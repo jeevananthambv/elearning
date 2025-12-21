@@ -292,11 +292,10 @@ const Admin = () => {
         try {
             let updatedProfile = { ...profileForm };
 
-            // Note: Image upload requires Firebase Storage CORS configuration
-            // For now, skip image upload if file is selected
+            // Upload profile image if selected
             if (profileImageFile) {
-                console.warn('Image upload requires Firebase Storage CORS setup. Skipping image upload.');
-                // Don't throw error, just skip the image upload
+                const imageUrl = await uploadImage(profileImageFile, 'profile-images');
+                updatedProfile.profileImage = imageUrl;
             }
 
             console.log('Updating profile with:', updatedProfile);
@@ -331,11 +330,10 @@ const Admin = () => {
         try {
             let updatedContent = { ...contentForm };
 
-            // Note: Image upload requires Firebase Storage CORS configuration
-            // For now, skip image upload if file is selected
+            // Upload hero image if selected
             if (heroImageFile) {
-                console.warn('Image upload requires Firebase Storage CORS setup. Skipping image upload.');
-                // Don't throw error, just skip the image upload
+                const imageUrl = await uploadImage(heroImageFile, 'hero-images');
+                updatedContent.heroImage = imageUrl;
             }
 
             console.log('Updating content with:', updatedContent);
