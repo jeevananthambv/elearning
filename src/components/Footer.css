@@ -145,6 +145,41 @@
     box-shadow: 0 8px 20px rgba(201, 169, 98, 0.3);
 }
 
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    color: var(--color-white);
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    text-decoration: none;
+    cursor: pointer;
+    pointer-events: auto;
+    border: none;
+}
+
+.social-button.linkedin {
+    background: #0077b5;
+}
+
+.social-button.scholar {
+    background: #4285f4;
+}
+
+.social-button:hover {
+    transform: translateX(5px);
+    color: var(--color-white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 .footer-bottom {
     text-align: center;
     padding-top: var(--spacing-lg);

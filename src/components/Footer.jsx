@@ -11,6 +11,7 @@ const Footer = () => {
         location: 'Department of Computer Science',
         social: {}
     });
+    const [identifiers, setIdentifiers] = useState({});
 
     useEffect(() => {
         const fetchContactInfo = async () => {
@@ -23,6 +24,7 @@ const Footer = () => {
                         location: response.data.department || response.data.location,
                         social: response.data.social || {}
                     });
+                    setIdentifiers(response.data.identifiers || {});
                 }
             } catch (err) {
                 console.error('Failed to fetch footer info:', err);
@@ -68,17 +70,65 @@ const Footer = () => {
                     <div className="footer-section footer-social">
                         <h4 className="footer-heading">Follow Us</h4>
                         <div className="social-links">
-                            <a href="https://www.linkedin.com/in/madhan-kumar-637231248/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="social-link">
+                            <a 
+                                href={identifiers.linkedin || 'https://www.linkedin.com/in/madhan-kumar-637231248/'} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                aria-label="LinkedIn" 
+                                className="social-link"
+                                title="LinkedIn Profile"
+                            >
                                 <span>in</span>
                             </a>
-                            <a href="https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar" className="social-link">
+                            <a 
+                                href={identifiers.googleScholar || 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ'} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                aria-label="Google Scholar" 
+                                className="social-link"
+                                title="Google Scholar"
+                            >
                                 <span>🎓</span>
                             </a>
-                            <a href="https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview" target="_blank" rel="noopener noreferrer" aria-label="ResearchGate" className="social-link">
+                            <a 
+                                href={identifiers.researchGate || 'https://www.researchgate.net/profile/Mathan-Kumar-C?ev=prf_overview'} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                aria-label="ResearchGate" 
+                                className="social-link"
+                                title="ResearchGate Profile"
+                            >
                                 <span>RG</span>
                             </a>
-                            <a href={`mailto:${contactInfo.email}`} aria-label="Email" className="social-link">
-                                <span>✉</span>
+                            <a 
+                                href={identifiers.github || 'https://github.com/Mathan-2003'} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                aria-label="GitHub" 
+                                className="social-link"
+                                title="GitHub Profile"
+                            >
+                                <span>💻</span>
+                            </a>
+                        </div>
+                        <div className="social-buttons" style={{ marginTop: '12px' }}>
+                            <a 
+                                href={identifiers.linkedin || 'https://www.linkedin.com/in/madhan-kumar-637231248/'} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="social-button linkedin"
+                                style={{ fontSize: '0.85rem', padding: '8px 12px' }}
+                            >
+                                LinkedIn
+                            </a>
+                            <a 
+                                href={identifiers.googleScholar || 'https://scholar.google.com/citations?hl=en&user=VLy1Y18AAAAJ'} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="social-button scholar"
+                                style={{ fontSize: '0.85rem', padding: '8px 12px' }}
+                            >
+                                Scholar
                             </a>
                         </div>
                     </div>
