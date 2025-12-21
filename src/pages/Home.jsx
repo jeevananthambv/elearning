@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { videosAPI, statsAPI, contentAPI } from '../api';
+import { videosAPI, statsAPI, contentAPI, profileAPI } from '../api';
 import './Home.css';
-import facultyProfile from '../assets/faculty-profile.jpg';
+import facultyProfile from '../assets/faculty-profile.jpg'; // Keep as fallback
 
 const Home = () => {
     const [recentVideos, setRecentVideos] = useState([]);
     const [stats, setStats] = useState({ videos: 0, materials: 0, views: 0, downloads: 0 });
     const [content, setContent] = useState(null);
+    const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,10 +17,11 @@ const Home = () => {
 
     const fetchData = async () => {
         try {
-            const [videosRes, statsRes, contentRes] = await Promise.all([
+            const [videosRes, statsRes, contentRes, profileRes] = await Promise.all([
                 videosAPI.getAll(),
                 statsAPI.getPublic(),
-                contentAPI.get()
+                contentAPI.get(),
+                profileAPI.get()
             ]);
 
             if (videosRes.success) {
@@ -30,6 +32,9 @@ const Home = () => {
             }
             if (contentRes.success && contentRes.data) {
                 setContent(contentRes.data);
+            }
+            if (profileRes.success && profileRes.data) {
+                setProfile(profileRes.data);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -55,7 +60,7 @@ const Home = () => {
             description: content?.hero?.description || 'Welcome to our educational portal where quality meets accessibility. Explore comprehensive video lectures, study materials, and resources designed to enhance your learning experience.',
             ctaPrimary: content?.hero?.ctaPrimary || '🎬 Browse Videos',
             ctaSecondary: content?.hero?.ctaSecondary || '📚 Study Materials',
-            image: content?.hero?.image || facultyProfile
+            image: content?.hero?.image || profile?.image || facultyProfile
         },
         mission: content?.mission || {
             title: 'Our Mission',

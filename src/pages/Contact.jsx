@@ -76,8 +76,8 @@ const Contact = () => {
         }
     };
 
-    // Helper to validate URLs
-    const getValidUrl = (url, fallback) => {
+    // Helper to validate URLs (currently unused but kept for future implementation)
+    const _getValidUrl = (url, fallback) => {
         if (!url || typeof url !== 'string' || url.trim() === '' || url === '#') return fallback;
         const trimmed = url.trim();
         // Ensure protocol

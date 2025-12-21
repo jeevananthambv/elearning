@@ -833,6 +833,17 @@ const Admin = () => {
                                 </div>
                                 <div className="form-row">
                                     <div className="form-group">
+                                        <label>Google Scholar URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.googleScholar || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, googleScholar: e.target.value }
+                                            })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
                                         <label>ResearchGate URL</label>
                                         <input
                                             type="text"
@@ -843,6 +854,8 @@ const Admin = () => {
                                             })}
                                         />
                                     </div>
+                                </div>
+                                <div className="form-row">
                                     <div className="form-group">
                                         <label>Semantic Scholar URL</label>
                                         <input
@@ -854,18 +867,19 @@ const Admin = () => {
                                             })}
                                         />
                                     </div>
+                                    <div className="form-group">
+                                        <label>Academia.edu URL</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.identifiers?.academia || ''}
+                                            onChange={(e) => setProfileForm({
+                                                ...profileForm,
+                                                identifiers: { ...profileForm.identifiers, academia: e.target.value }
+                                            })}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label>Academia.edu URL</label>
-                                    <input
-                                        type="text"
-                                        value={profileForm.identifiers?.academia || ''}
-                                        onChange={(e) => setProfileForm({
-                                            ...profileForm,
-                                            identifiers: { ...profileForm.identifiers, academia: e.target.value }
-                                        })}
-                                    />
-                                </div>
+
 
                                 <h4 className="form-section-title">E-Content Contributions</h4>
                                 <div className="form-group">
