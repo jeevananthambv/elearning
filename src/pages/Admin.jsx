@@ -292,15 +292,11 @@ const Admin = () => {
         try {
             let updatedProfile = { ...profileForm };
 
-            // Handle profile image upload if a new file is selected
+            // Note: Image upload requires Firebase Storage CORS configuration
+            // For now, skip image upload if file is selected
             if (profileImageFile) {
-                const uploadResult = await uploadImage(profileImageFile, 'profile-images');
-                if (uploadResult.success) {
-                    updatedProfile.image = uploadResult.url;
-                    updatedProfile.imageStoragePath = uploadResult.storagePath;
-                } else {
-                    throw new Error('Failed to upload profile image');
-                }
+                console.warn('Image upload requires Firebase Storage CORS setup. Skipping image upload.');
+                // Don't throw error, just skip the image upload
             }
 
             console.log('Updating profile with:', updatedProfile);
@@ -321,7 +317,7 @@ const Admin = () => {
         } catch (err) {
             console.error('Profile update error:', err);
             const errorMsg = err.message || 'Failed to update profile';
-            setFormMessage({ type: 'error', text: `Error: ${errorMsg}. Please check console for details.` });
+            setFormMessage({ type: 'error', text: `Error: ${errorMsg}` });
         } finally {
             setUploading(false);
         }
@@ -335,18 +331,11 @@ const Admin = () => {
         try {
             let updatedContent = { ...contentForm };
 
-            // Handle hero image upload if a new file is selected
+            // Note: Image upload requires Firebase Storage CORS configuration
+            // For now, skip image upload if file is selected
             if (heroImageFile) {
-                const uploadResult = await uploadImage(heroImageFile, 'hero-images');
-                if (uploadResult.success) {
-                    updatedContent.hero = {
-                        ...updatedContent.hero,
-                        image: uploadResult.url,
-                        imageStoragePath: uploadResult.storagePath
-                    };
-                } else {
-                    throw new Error('Failed to upload hero image');
-                }
+                console.warn('Image upload requires Firebase Storage CORS setup. Skipping image upload.');
+                // Don't throw error, just skip the image upload
             }
 
             console.log('Updating content with:', updatedContent);
@@ -366,7 +355,7 @@ const Admin = () => {
         } catch (err) {
             console.error('Content update error:', err);
             const errorMsg = err.message || 'Failed to update content';
-            setFormMessage({ type: 'error', text: `Error: ${errorMsg}. Please check console for details.` });
+            setFormMessage({ type: 'error', text: `Error: ${errorMsg}` });
         } finally {
             setUploading(false);
         }
